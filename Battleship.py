@@ -1,3 +1,4 @@
+# Some comment
 w=0
 while w!=1:
     print ("Ready?");x=input()
