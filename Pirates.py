@@ -35,10 +35,15 @@ class PiratesGame:
 
     def run(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((600, 600))
-        pygame.display.set_caption('Yarrrr!!')
 
         self.running = True
+        self.screen = pygame.display.set_mode((600, 600))#25px on sides, 20px 
+        pygame.display.set_caption('Yarrrr!!')           #between squares and
+                                                         #75px per square
+        rect=pygame.Rect(75,75,25,25)
+        self.screen.fill((250,250,250),rect)
+        pygame.display.flip()
+
         while self.running:
             for user in pygame.event.get():
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
