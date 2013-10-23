@@ -28,9 +28,12 @@ class PiratesGame:
 
     def run(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((600, 600))
-        pygame.display.set_caption('Yarrrr!!')
-
+        self.screen = pygame.display.set_mode((600, 600))#25px on sides, 20px 
+        pygame.display.set_caption('Yarrrr!!')           #between squares and
+                                                         #75px per square
+        rect=pygame.Rect(75,75,25,25)
+        self.screen.fill((250,250,250),rect)
+        pygame.display.flip()
         board = (
             (0,1,2,3,4,5),(0,1,2,3,4,5),
             (0,1,2,3,4,5),(0,1,2,3,4,5),
@@ -38,7 +41,7 @@ class PiratesGame:
         ) #matrix time!
         y=3
         x=2
-
+        
         running=True
         while running:
             for user in pygame.event.get():
