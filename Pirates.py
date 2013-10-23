@@ -36,8 +36,6 @@ class PiratesGame:
             (0,1,2,3,4,5),(0,1,2,3,4,5),
             (0,1,2,3,4,5),(0,1,2,3,4,5)
         ) #matrix time!
-        y=3
-        x=2
 
         running=True
         while running:
