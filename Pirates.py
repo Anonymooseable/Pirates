@@ -24,15 +24,18 @@ class PiratesGame:
             pg.K_RIGHT: right,
             pg.K_DOWN: down,
             pg.K_UP: up
-        }
+        } #all commands
 
     def run(self):
         pygame.init()
         self.screen = pygame.display.set_mode((600, 600))
         pygame.display.set_caption('Yarrrr!!')
 
-        board = ((0,1,2,3,4,5),(0,1,2,3,4,5),\
-        (0,1,2,3,4,5),(0,1,2,3,4,5),(0,1,2,3,4,5),(0,1,2,3,4,5)) #matrix time!
+        board = (
+            (0,1,2,3,4,5),(0,1,2,3,4,5),
+            (0,1,2,3,4,5),(0,1,2,3,4,5),
+            (0,1,2,3,4,5),(0,1,2,3,4,5)
+        ) #matrix time!
         y=3
         x=2
 
@@ -41,7 +44,7 @@ class PiratesGame:
             for user in pygame.event.get():
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
                     self.key_handlers[user.key](self)
-                    print(x,y)
+                    print(self.x,self.y)
                 cursor_pos=board[y][x]  #remember: rows then columns
                 if user.type==pygame.QUIT:
                     running=False
