@@ -14,10 +14,10 @@ class PiratesGame:
             if self.cursor_x != 0:
                 self.cursor_x -= 1
         def right(self):
-            if self.cursor_x != 5:
+            if self.cursor_x != self.grid.width - 1:
                 self.cursor_x += 1
         def down(self):
-            if self.cursor_y != 5:
+            if self.cursor_y != self.grid.height - 1:
                 self.cursor_y += 1
         def up(self):
             if self.cursor_y != 0:
