@@ -1,3 +1,4 @@
+
 import pygame
 pygame.init()
 screen = pygame.display.set_mode((600, 600))
@@ -32,3 +33,4 @@ while running:
         if str(user.type)=='QUIT':
             running=False
 pygame.quit()
+
