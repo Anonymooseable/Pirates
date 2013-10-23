@@ -3,6 +3,9 @@
 import pygame
 import pygame as pg
 
+import grid
+import ship
+
 class PiratesGame:
     def __init__(self):
         self.x = 0
@@ -25,11 +28,7 @@ class PiratesGame:
             pg.K_DOWN: down,
             pg.K_UP: up
         } # all commands
-        self.board = (
-            (0,1,2,3,4,5),(0,1,2,3,4,5),
-            (0,1,2,3,4,5),(0,1,2,3,4,5),
-            (0,1,2,3,4,5),(0,1,2,3,4,5)
-        ) # matrix time!
+        self.grid = grid.Grid(6, 6)
 
         self.running = False
 
@@ -37,21 +36,19 @@ class PiratesGame:
         pygame.init()
 
         self.running = True
-        self.screen = pygame.display.set_mode((600, 600))#25px on sides, 20px 
-        pygame.display.set_caption('Yarrrr!!')           #between squares and
-                                                         #75px per square
-        rect=pygame.Rect(75,75,25,25)
-        self.screen.fill((250,250,250),rect)
-        pygame.display.flip()
+        self.screen = pygame.display.set_mode((600, 600))
+        pygame.display.set_caption('Yarrrr!!')
 
         while self.running:
-            for user in pygame.event.get():
-                if user.type==pg.KEYDOWN and user.key in self.key_handlers:
-                    self.key_handlers[user.key](self)
-                    print (self.x, self.y)
-                    cursor_pos = self.board[self.y][self.x] # remember: rows then columns
-                if user.type == pygame.QUIT:
+            self.grid.draw(self.screen)
+            for event in pygame.event.get():
+                if event.type==pg.KEYDOWN and event.key in self.key_handlers:
+                    self.key_handlers[event.key](self)
+                    pygame.draw.rect((255, 0, 0), (10, 10, self.grid.squares_to_pixels(self.x), self.grid.squares_to_pixels(self.y)))
+                if event.type == pygame.QUIT:
                     self.running = False
+            pygame.display.flip()
+
         pygame.quit()
 
 if __name__ == "__main__":

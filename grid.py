@@ -1,3 +1,6 @@
+import pygame
+import random
+
 class CollisionError(Exception):
 	pass
 
@@ -8,7 +11,19 @@ class Grid:
 	@property
 	def total_height(self):
 	    return self.border_size * 2	+ self.height * self.square_size + (self.height-1) * self.square_margin
-	
+
+	def pixels_to_squares(self, value):
+		try:
+			return (value - self.border_size) // (self.square_size + self.square_margin)
+		except TypeError:
+			return [self.pixels_to_squares(component) for component in value]
+
+	def squares_to_pixels(self, value): # Top left corner of a square
+		try:
+			return self.border_size + (self.square_size + self.square_margin) * value
+		except TypeError:
+			return [self.squares_to_pixels(component) for component in value]
+
 	def __init__(self, width, height):
 		self.width = width
 		self.height = height
@@ -28,12 +43,12 @@ class Grid:
 
 	def draw(self, screen):
 		screen.fill(self.background_colour)
-		for x in range(width):
-			for y in range(height):
+		for x in range(self.width):
+			for y in range(self.height):
 				rect = pygame.Rect(
+					self.squares_to_pixels(x),
+					self.squares_to_pixels(y),
 					self.square_size,
-					self.square_size,
-					self.border_size + (self.square_size + self.square_margin) * x,
-					self.border_size + (self.square_size + self.square_margin) * y,
+					self.square_size
 				)
 				screen.fill(self.square_colour, rect)
