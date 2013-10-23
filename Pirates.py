@@ -24,7 +24,7 @@ class PiratesGame:
             pg.K_RIGHT: right,
             pg.K_DOWN: down,
             pg.K_UP: up
-        } #all commands
+        } # all commands
 
     def run(self):
         pygame.init()
@@ -35,7 +35,7 @@ class PiratesGame:
             (0,1,2,3,4,5),(0,1,2,3,4,5),
             (0,1,2,3,4,5),(0,1,2,3,4,5),
             (0,1,2,3,4,5),(0,1,2,3,4,5)
-        ) #matrix time!
+        ) # matrix time!
 
         running=True
         while running:
@@ -43,7 +43,7 @@ class PiratesGame:
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
                     self.key_handlers[user.key](self)
                     print(self.x,self.y)
-                cursor_pos=board[y][x]  #remember: rows then columns
+                    cursor_pos=board[self.y][self.x] # remember: rows then columns
                 if user.type==pygame.QUIT:
                     running=False
         pygame.quit()
