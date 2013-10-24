@@ -18,7 +18,7 @@ class Grid:
 		except TypeError:
 			return [self.pixels_to_squares(component) for component in value]
 
-	def squares_to_pixels(self, value, centred = False, round = False): # Top left corner or centre of a square
+	def squares_to_pixels(self, value, centred = False, round = False): # Top left corner or centre of a square
 		try:
 			out = self.border_size + (self.square_size + self.square_margin) * value + (self.square_size/2 if centred else 0)
 			return (int(out) if round else out)
@@ -29,9 +29,9 @@ class Grid:
 		self.width = width
 		self.height = height
 		self.ships = []
-		self.border_size = 25 # Size of border from edge of window
+		self.border_size = 25 # Size of border from edge of window
 		self.square_size = 75 # Size of each square
-		self.square_margin = 20 # Size of inter-square border
+		self.square_margin = 20 # Size of inter-square border
 		self.square_colour = pygame.Color(255, 255, 255, 255)
 		self.background_colour = pygame.Color(0, 0, 0, 255)
 

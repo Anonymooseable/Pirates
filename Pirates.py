@@ -28,7 +28,7 @@ class PiratesGame:
             self.cursor_y = 0
             self.update_cursor()
 
-        def update_cursor(self): # Updates the coordinates of the cursor
+        def update_cursor(self): # Updates the coordinates of the cursor
             self.cursor_pixelpos = self.game.grid.squares_to_pixels((self.cursor_x, self.cursor_y), centred = True, round = True)
 
         def left(self):
@@ -60,12 +60,12 @@ class PiratesGame:
             pg.K_DOWN: down,
             pg.K_UP: up
         }
-        
+
         def draw(self):
             self.parent.draw()
             pygame.draw.circle(self.game.screen, (255, 0, 0), self.cursor_pixelpos, 10) # Draw cursor as a red circle
 
-    def __init__(self):        
+    def __init__(self):
         self.grid = grid.Grid(6, 6)
         self.state = self.SelectingSquareState(self)
         self.running = False
