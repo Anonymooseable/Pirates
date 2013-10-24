@@ -1,8 +1,9 @@
 import circuits
-import grid
-from state import State
 import pygame
 import pygame as pg
+
+import grid
+from .state import State
 
 class SelectionConfirmed (circuits.Event):
     """Fired when the selection of a square is confirmed by the user"""
