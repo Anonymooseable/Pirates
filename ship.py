@@ -44,9 +44,9 @@ class Ship (Drawable):
 		if self.orientation in (self.orientations["down"], self.orientations["right"]):
 			return self.grid.squares_to_pixels((self.x, self.y))
 		elif self.orientation == self.orientations["up"]:
-			return self.grid.squares_to_pixels((self.x, self.y - self.length))
+			return self.grid.squares_to_pixels((self.x, self.y - self.length + 1))
 		elif self.orientation == self.orientations["left"]:
-			return self.grid.squares_to_pixels((self.x - self.length, self.y))
+			return self.grid.squares_to_pixels((self.x - self.length + 1, self.y))
 
 	def collides(self, other): # Collides either with another ship or a pair of coordinates
 		try:
