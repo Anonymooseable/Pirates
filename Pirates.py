@@ -10,9 +10,16 @@ class PiratesGame:
     class State:
         def __init__(self, game):
             self.game = game
-        def handle_key(self, game, key):
+
+        def handle_key(self, key):
             if key in self.key_handlers:
                 self.key_handlers[key](self)
+
+        def update(self):
+            pass
+
+        def draw(self):
+            pass
 
     class SelectingSquareState (State):
         def __init__(self, *args, **kwargs):
@@ -21,8 +28,8 @@ class PiratesGame:
             self.cursor_y = 0
             self.update_cursor()
 
-        def update_cursor(self):
-            self.cursor_pixelpos = [int(component) for component in self.game.grid.squares_to_pixels((self.cursor_x, self.cursor_y), centred=True)]
+        def update_cursor(self): # Updates the coordinates of the cursor
+            self.cursor_pixelpos = self.game.grid.squares_to_pixels((self.cursor_x, self.cursor_y), centred = True, round = True)
 
         def left(self):
             if self.cursor_x != 0:
@@ -44,6 +51,9 @@ class PiratesGame:
                 self.cursor_y -= 1
                 self.update_cursor()
 
+        def enter(self):
+            self.parent.child_return((self.cursor_x, self.cursor_y))
+
         key_handlers = {
             pg.K_LEFT: left,
             pg.K_RIGHT: right,
@@ -52,6 +62,7 @@ class PiratesGame:
         }
         
         def draw(self):
+            self.parent.draw()
             pygame.draw.circle(self.game.screen, (255, 0, 0), self.cursor_pixelpos, 10) # Draw cursor as a red circle
 
     def __init__(self):        
@@ -67,10 +78,11 @@ class PiratesGame:
         pygame.display.set_caption('Yarrrr!!')
 
         while self.running:
+            self.state.update()
             self.grid.draw(self.screen)
             for event in pygame.event.get():
                 if event.type == pg.KEYDOWN:
-                    self.state.handle_key(self, event.key)
+                    self.state.handle_key(event.key)
                 if event.type == pygame.QUIT:
                     self.running = False
             self.state.draw()

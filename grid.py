@@ -18,11 +18,12 @@ class Grid:
 		except TypeError:
 			return [self.pixels_to_squares(component) for component in value]
 
-	def squares_to_pixels(self, value, centred = False): # Top left corner or centre of a square
+	def squares_to_pixels(self, value, centred = False, round = False): # Top left corner or centre of a square
 		try:
-			return self.border_size + (self.square_size + self.square_margin) * value + (self.square_size/2 if centred else 0)
+			out = self.border_size + (self.square_size + self.square_margin) * value + (self.square_size/2 if centred else 0)
+			return (int(out) if round else out)
 		except TypeError:
-			return [self.squares_to_pixels(component, centred) for component in value]
+			return [self.squares_to_pixels(component, centred, round) for component in value]
 
 	def __init__(self, width, height):
 		self.width = width
