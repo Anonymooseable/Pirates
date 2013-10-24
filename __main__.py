@@ -52,7 +52,7 @@ class PiratesGame (circuits.Component):
     def prepare_unregister(self, event, component): # Removes an item from the draw queue if it gets unregistered
         pop_keys = []
         for key, value in self.draw_queue.items():
-            if event.in_subtree(value):
+            if isinstance(value, circuits.Component) and event.in_subtree(value):
                 pop_keys.append(key)
         for key in pop_keys:
             self.draw_queue.pop(key)
