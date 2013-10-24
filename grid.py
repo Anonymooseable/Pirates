@@ -1,9 +1,11 @@
+import circuits
 import pygame
+from classes import Drawable
 
 class CollisionError(Exception):
 	pass
 
-class Grid:
+class Grid (circuits.Component, Drawable):
 	@property
 	def total_width(self):
 	    return self.border_size * 2	+ self.width * self.square_size + (self.width-1) * self.square_margin
@@ -25,6 +27,7 @@ class Grid:
 			return [self.squares_to_pixels(component, centred, round) for component in value]
 
 	def __init__(self, width, height):
+		super().__init__()
 		self.width = width
 		self.height = height
 		self.ships = []
@@ -41,8 +44,9 @@ class Grid:
 		ship.grid = self
 		self.ships.append(ship)
 
-	def draw(self, screen):
-		screen.fill(self.background_colour)
+	def draw(self, surface):
+		super().draw(surface)
+		surface.fill(self.background_colour)
 		for x in range(self.width):
 			for y in range(self.height):
 				rect = pygame.Rect(
@@ -51,4 +55,4 @@ class Grid:
 					self.square_size,
 					self.square_size
 				)
-				screen.fill(self.square_colour, rect)
+				surface.fill(self.square_colour, rect)
