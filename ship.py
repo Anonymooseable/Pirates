@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 import pygame
-from classes import Drawable
+from classes import Drawable, Vector2
+
+default_colour = pygame.Color(128, 128, 128, 255)
+preplaced_colour = pygame.Color(128, 255, 128, 128)
+error_colour = pygame.Color(255, 0, 0, 255)
 
 class Ship (Drawable):
 	orientations = {
@@ -42,11 +46,20 @@ class Ship (Drawable):
 	@property
 	def corner_topleft(self):
 		if self.orientation in (self.orientations["down"], self.orientations["right"]):
-			return self.grid.squares_to_pixels((self.x, self.y))
+			return (self.x, self.y)
 		elif self.orientation == self.orientations["up"]:
-			return self.grid.squares_to_pixels((self.x, self.y - self.length + 1))
+			return (self.x, self.y - self.length + 1)
 		elif self.orientation == self.orientations["left"]:
-			return self.grid.squares_to_pixels((self.x - self.length + 1, self.y))
+			return (self.x - self.length + 1, self.y)
+
+	@property
+	def corner_bottomright(self):
+		if self.orientation in (self.orientations["up"], self.orientations["left"]):
+			return (self.x, self.y)
+		elif self.orientation == self.orientations["down"]:
+			return (self.x, self.y + self.length - 1)
+		elif self.orientation == self.orientations["right"]:
+			return (self.x + self.length - 1, self.y)
 
 	def collides(self, other): # Collides either with another ship or a pair of coordinates
 		try:
@@ -57,24 +70,38 @@ class Ship (Drawable):
 			return self.onBoat(other)
 
 	@property
+	def x(self):
+		return self.pos.x
+	@x.setter
+	def x(self, value):
+		self.pos.x = value
+
+	@property
+	def y(self):
+		return self.pos.y
+	@y.setter
+	def y(self, value):
+		self.pos.y = value
+
+
+	@property
 	def squares(self):
 		if self.orientation == self.orientations["up"]:
-			return ((self.x, y) for y in range(self.y - self.length, self.y))
+			return ((self.x, y + 1) for y in range(self.y - self.length, self.y))
 		elif self.orientation == self.orientations["down"]:
 			return ((self.x, y) for y in range(self.y, self.y + self.length))
 		elif self.orientation == self.orientations["left"]:
-			return ((x, self.y) for x in range(self.x - self.length, self.x))
+			return ((x + 1, self.y) for x in range(self.x - self.length, self.x))
 		elif self.orientation == self.orientations["right"]:
 			return ((x, self.y) for x in range(self.x, self.x + self.length))
 
 	def __init__(self, length = 2, x = 0, y = 0, orientation = "down"):
-		self.x = int(x)
-		self.y = int(y)
+		self.pos = Vector2(x, y)
 		self.length = int(length)
 		self.damages = []
 		self.orientation = orientation
 		self.grid = None
-		self.colour = pygame.Color(128, 128, 128, 128)
+		self.colour = preplaced_colour
 
 	def onBoat(self, square): # Ugly function for testing if a square belongs to the boat (should be faster than square in self.squares)
 		_x, _y = square
@@ -101,7 +128,7 @@ class Ship (Drawable):
 		if self.grid == None:
 			raise ValueError("No grid found!")
 		else:
-			x, y = self.corner_topleft
+			x, y = self.grid.square_topleft(self.corner_topleft)
 			width = self.length if self.horizontal else 1
 			height = self.length if self.vertical else 1
 			surface.fill(
@@ -109,10 +136,26 @@ class Ship (Drawable):
 				pygame.Rect(
 					x,
 					y,
-					width * self.grid.square_size + (width - 1) * self.grid.square_margin,
-					height * self.grid.square_size + (height - 1) * self.grid.square_margin
+					width * self.grid.square_size + (width - 1 if width > 0 else 0) * self.grid.square_margin,
+					height * self.grid.square_size + (height - 1 if height > 0 else 0) * self.grid.square_margin
 				)
 			)
 
+	def position_in_grid(self):
+		x, y = self.corner_topleft
+		if x < 0 or y < 0:
+			return False
+		x, y = self.corner_bottomright
+		if x > self.grid.width - 1 or y > self.grid.height - 1:
+			return False
+		return True
+
+	def position_ok(self):
+		if not self.position_in_grid():
+			return False
+		for other in self.grid.ships:
+			if self.collides(other):
+				return False
+		return True
 	#def attack(self, _x, _y):
 	#	if self.onBoat(_x, _y):
