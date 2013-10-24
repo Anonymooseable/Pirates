@@ -6,7 +6,7 @@ import pygame
 import pygame as pg
 
 from grid import Grid
-import ship
+from ship import Ship
 import select_square
 from events import Update, KeyDown, KeyUp, QuitRequest
 
@@ -18,7 +18,10 @@ class PiratesGame (circuits.Component):
         self.state = select_square.SelectingSquareState().register(self)
         self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)
 
-        self.draw_queue = {0: self.grid, 10: self.state}
+        self.ships = [Ship()]
+        self.ships[0].grid = self.grid
+
+        self.draw_queue = {0: self.grid, 5: self.ships[0], 10: self.state}
 
     def started(self, *args):
         pygame.init()
