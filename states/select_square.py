@@ -12,12 +12,13 @@ class SelectionConfirmed (circuits.Event):
 		self.selection = selection
 
 class SelectingSquareState (CursorState):
-	def __init__(self):
-		super().__init__()
-		def enter(self):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+
+		@self.keydown_handler(pg.K_RETURN)
+		def confirm(self):
 			self.fire(SelectionConfirmed((self.cursor_x, self.cursor_y)))
 			self.unregister()
-		self.keydown_handlers[pg.K_RETURN] = enter
 
 	def draw(self, surface):
 		super().draw(surface)

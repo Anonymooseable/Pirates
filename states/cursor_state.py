@@ -10,9 +10,23 @@ from classes import Vector2
 from events import KeyHandler
 
 class CursorState (State):
-	def __init__(self):
-		super().__init__()
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
 		self.cursor = Vector2(0, 0)
+
+		def _up(self):
+			self.cursor.y -= 1
+		def _down(self):
+			self.cursor.y += 1
+		def _left(self):
+			self.cursor.x -= 1
+		def _right(self):
+			self.cursor.x += 1
+
+		self.left = self.keydown_handler(pg.K_LEFT)(self.cursor_modifier(_right)(_left))
+		self.right = self.keydown_handler(pg.K_RIGHT)(self.cursor_modifier(_left)(_right))
+		self.up = self.keydown_handler(pg.K_UP)(self.cursor_modifier(_down)(_up))
+		self.down = self.keydown_handler(pg.K_DOWN)(self.cursor_modifier(_up)(_down))
 
 	def cursor_ok(self):
 		"""Returns true if the currently set cursor is acceptable and False if not.
@@ -29,7 +43,7 @@ By default, will set the cursor_pixelpos attribute to the coordinates in pixels 
 	def registered(self, *args):
 		self.update_cursor()
 
-	def cursor_modifier(reverse_fun): # Decorator for functions that move the cursor
+	def cursor_modifier(self, reverse_fun): # Decorator for functions that move the cursor
 		"""Wraps a function that will modify the cursor.
 
 This decorator will first check if the new cursor value is acceptable by referring to cursor_ok(), then reset it if not.
@@ -43,17 +57,3 @@ If the new value is acceptable, it will call update_cursor() to take the changes
 					self.update_cursor()
 			return result
 		return wrap
-
-	def _up(self):
-		self.cursor.y -= 1
-	def _down(self):
-		self.cursor.y += 1
-	def _left(self):
-		self.cursor.x -= 1
-	def _right(self):
-		self.cursor.x += 1
-
-	left = KeyHandler.keydown_handler(pg.K_LEFT)(cursor_modifier(_right)(_left))
-	right = KeyHandler.keydown_handler(pg.K_RIGHT)(cursor_modifier(_left)(_right))
-	up = KeyHandler.keydown_handler(pg.K_UP)(cursor_modifier(_down)(_up))
-	down = KeyHandler.keydown_handler(pg.K_DOWN)(cursor_modifier(_up)(_down))

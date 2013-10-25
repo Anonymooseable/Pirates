@@ -16,20 +16,20 @@ class QuitRequest (circuits.Event):
 	"""User requested quit (pressing escape, closing window...)"""
 
 class KeyHandler (circuits.Component):
-	keydown_handlers = {}
-	keyup_handlers = {}
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.keydown_handlers = {}
+		self.keyup_handlers = {}
 
-	@classmethod
-	def keydown_handler(cls, key):
+	def keydown_handler(self, key):
 		def register(f):
-			cls.keydown_handlers[key] = f
+			self.keydown_handlers[key] = f
 			return f
 		return register
 
-	@classmethod
-	def keyup_handler(cls, key):
+	def keyup_handler(self, key):
 		def register(f):
-			cls.keyup_handlers[key] = f
+			self.keyup_handlers[key] = f
 			return f
 		return register
 
