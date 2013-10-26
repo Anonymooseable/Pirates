@@ -134,18 +134,27 @@ class Ship (Drawable):
 		if self.grid == None:
 			raise ValueError("No grid found!")
 		else:
-			x, y = self.grid.square_topleft(self.corner_topleft)
-			width = self.length if self.horizontal else 1
-			height = self.length if self.vertical else 1
-			surface.fill(
-				self.colour,
-				pygame.Rect(
-					x,
-					y,
-					width * self.grid.square_size + (width - 1 if width > 0 else 0) * self.grid.square_margin,
-					height * self.grid.square_size + (height - 1 if height > 0 else 0) * self.grid.square_margin
+			try:
+				surface.blit(self.sprite, self.grid.square_topleft(self.corner_topleft))
+			except AttributeError:
+				print ("Sprite not generated...")
+				x, y = self.grid.square_topleft(self.corner_topleft)
+				sq_width = self.length if self.horizontal else 1
+				sq_height = self.length if self.vertical else 1
+				width = sq_width * self.grid.square_size + (sq_width - 1 if sq_width > 0 else 0) * self.grid.square_margin
+				height = sq_height * self.grid.square_size + (sq_height - 1 if sq_height > 0 else 0) * self.grid.square_margin
+				surface.fill(
+					self.colour,
+					pygame.Rect(
+						x,
+						y,
+						width,
+						height
+					),
 				)
-			)
+				self.sprite = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+				self.sprite.fill(self.colour)
+				self.sprite.set_alpha(self.colour.a)
 
 	def position_in_grid(self):
 		x, y = self.corner_topleft
