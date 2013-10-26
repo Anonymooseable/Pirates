@@ -19,7 +19,6 @@ class DrawChannel:
 	def __repr__(self):
 		return "%s %d" % (self.__class__.__name__, self.index)
 
-
 class Drawable (circuits.BaseComponent):
 	draw_channel = 50
 	real_draw_channel = None
@@ -43,7 +42,6 @@ class DrawManager (circuits.BaseComponent):
 
 	@handler("registered")
 	def _on_registered(self, component, manager):
-		print ("DrawManager:", component, "registered with", manager)
 		if isinstance(component, Drawable):
 			print ("Adding draw channel:", component.draw_channel)
 			self.channels.add(DrawChannel(component.draw_channel))
@@ -52,8 +50,7 @@ class DrawManager (circuits.BaseComponent):
 	def _on_draw(self, event, surface):
 		for channel in sorted(self.channels):
 			print ("Calling draw event on channel", channel)
-			self.call(Draw(surface), channel)
-			self.waitEvent(Draw(), channel)
+			yield self.call(Draw(surface), channel)
 		yield self.call(Draw(surface), "final_flip")
 		return
 
