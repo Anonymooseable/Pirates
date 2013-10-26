@@ -46,8 +46,6 @@ class PiratesGame:
 
 #Generating ship positions
         generated=False
-        X=0
-        Y=1
         ship_posx=1
         ship_posy=1
         # Notes for ship generation:
@@ -56,49 +54,43 @@ class PiratesGame:
         for ship_length in [2, 3, 3, 4]:
             generated = False
             while not generated:
-                x_or_y=random.choice((X, Y)) # Whether ship is horizontal (X) or vertical (Y)
-                if x_or_y == X: # The ship is horizontal so we'll mess with the X coordinate
-                    ship_posx=random.randint(0,5-ship_length) # Subtract the number of the ship, equivalent to its length (?)
+                x_or_y=random.choice(('horizontal','vertical'))
+                if x_or_y == 'horizontal': 
+                    ship_posx=random.randint(0,5-ship_length) # Subtract the length of the ship
                     ship_posy=random.randint(0,5)
                     generated = True # We'll be doing well until we fail (if we do)
-                    for position_on_ship in range(0, ship_length+1): # position_on_ship = how far along the ship we are
+                    for position_on_ship in range(0, ship_length): # position_on_ship = how far along the ship we are
                         x = ship_posx + position_on_ship # Determine x coordinate of the next square we want to set as part of the ship
                         if self.board[x][ship_posy]!=0: # If we can't put our ship here
                             generated = False # Then we failed.
                     if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
-                        for position_on_ship in range(ship_length+1): # Same as before
+                        for position_on_ship in range(ship_length): # Same as before
                             x = ship_posx + position_on_ship
                             self.board[x][ship_posy] = 1 # We are now occupying the square!
 
                 else:
                     ship_posx=random.randint(0,5)
-                    ship_posy=random.randint(0,5-ship_length) # Subtract the number of the ship, equivalent to its length (?)
+                    ship_posy=random.randint(0,5-ship_length) # Subtract the length of the ship
                     generated = True # We'll be doing well until we fail (if we do)
-                    for position_on_ship in range(0, ship_length+1): # position_on_ship = how far along the ship we are
+                    for position_on_ship in range(0, ship_length): # position_on_ship = how far along the ship we are
                         y = ship_posy + position_on_ship # Determine x coordinate of the next square we want to set as part of the ship
                         if self.board[ship_posx][y]!=0: # If we can't put our ship here
                             generated = False # Then we failed.
                     if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
-                        for position_on_ship in range(ship_length+1): # Same as before
+                        for position_on_ship in range(ship_length): # Same as before
                             y = ship_posy + position_on_ship
                             self.board[ship_posx][y] = 1 # We are now occupying the square!
 
 #Drawing the board
-        for x, x_pixels in [(0,0),(1,95),(2,190),(3,285),(4,380),(5,475)]:
-            for y, y_pixels in [(0,0),(1,95),(2,190),(3,285),(4,380),(5,475)]:
-                rect=pygame.Rect(25+x_pixels,25+y_pixels,75,75)  #(x,y,width,height)
+        for x, x_pixels in self.x_box.items():
+            for y, y_pixels in self.y_box.items():
+                rect=pygame.Rect(x_pixels,y_pixels,75,75)  #(x,y,width,height)
                 if self.board[x][y] == 0: # If the square is free, draw it blue
                     self.screen.fill((20,70,130),rect)
                 else: # Otherwise grey
                     self.screen.fill((128,128,128),rect)
         copy_screen=pygame.Surface.copy(self.screen)
         pygame.display.flip()
-
-        #check whether this works!!
-        for y in [0,1,2,3,4,5]:
-            for x in [0,1,2,3,4,5]:
-                if self.board[y][x]==1:
-                    print(x,y)
 
 
         curs = pygame.sprite.Sprite()
