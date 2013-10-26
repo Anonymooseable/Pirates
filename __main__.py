@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import circuits
+from circuits.core.handlers import handler
 
 import pygame
 import pygame as pg
@@ -9,7 +10,7 @@ from grid import Grid
 from ship import Ship
 from states.place_all_ships import PlaceAllShipsState
 from events import Update, KeyDown, KeyUp, KeyHandler, Quit, PygamePoller
-from draw import DrawManager, DrawGroup, Draw
+from draw import DrawManager, Draw
 
 class PiratesGame (KeyHandler):
 	FPS = 60
@@ -41,17 +42,16 @@ class PiratesGame (KeyHandler):
 
 	@handler("update")
 	def _on_update(self, *args):
-		self.fire(Draw(self.screen))
+		self.fire(Draw(self.screen), "draw_manager")
 
 	@handler("quit")
 	def _on_quit(self, event):
 		self.stop()
 
 	@handler("prepare_unregister")
-	def _on_prepare_unregister(self, event, component): # Removes an item from the draw queue if it gets unregistered
+	def _on_prepare_unregister(self, event, component): # Switches to the next state if the component unregistered was the active state
 		if component == self.state:
 			self.next_state()
-		pop_keys = []
 
 if __name__ == "__main__":
 	PiratesGame().run()

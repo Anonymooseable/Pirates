@@ -1,13 +1,37 @@
 import circuits
+from circuits.core.handlers import handler
+import pygame
+
+class DrawChannel:
+	def __init__(self, index):
+		self.index = index
+		self.hash = hash(self.index)
+		def fail(self, attr, value):
+			raise TypeError("DrawChannel is immutable")
+		self.__setattr__ = fail
+
+	def __hash__(self):
+		return self.hash
+
+	def __lt__(self, other):
+		return self.index < other.index
+
+	def __repr__(self):
+		return "%s %d" % (self.__class__.__name__, self.index)
+
 
 class Drawable (circuits.BaseComponent):
+	draw_channel = 50
+	real_draw_channel = None
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.draw_channel = kwargs.get("order", 50)
+		def _on_draw(self, surface):
+			return self.draw(surface)
+		self.real_draw_channel = DrawChannel(self.draw_channel)
+		self._on_draw = handler("draw", channel = self.real_draw_channel)(_on_draw)
 
-	@handler("draw")
-	def _on_draw(self, surface):
-		pass
+	def draw(self, surface):
+		print (self, "got drawn")
 
 class Draw (circuits.Event):
 	"""Event fired by the DrawManager to draw the components in its subtree."""
@@ -21,16 +45,19 @@ class DrawManager (circuits.BaseComponent):
 	def _on_registered(self, component, manager):
 		print ("DrawManager:", component, "registered with", manager)
 		if isinstance(component, Drawable):
-			print ("It's drawable! Let's add it to our queue.")
-			self.channels.add(component.channel)
+			print ("Adding draw channel:", component.draw_channel)
+			self.channels.add(DrawChannel(component.draw_channel))
 
-	@handler("draw")
+	@handler("draw", channel = "draw_manager")
 	def _on_draw(self, event, surface):
 		for channel in sorted(self.channels):
-			self.call(Draw(), channel)
+			print ("Calling draw event on channel", channel)
+			self.call(Draw(surface), channel)
+			self.waitEvent(Draw(), channel)
+		yield self.call(Draw(surface), "final_flip")
+		return
 
-class DrawGroup (list, Drawable):
-	@handler("draw")
-	def _on_draw(self, surface):
-		for i in self:
-			i.draw(surface)
+	@handler("draw", channel = "final_flip")
+	def _on_flip(self, event, surface):
+		print ("flipping")
+		pygame.display.flip()

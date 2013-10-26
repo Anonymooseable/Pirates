@@ -1,3 +1,5 @@
+from circuits.core.handlers import handler
+
 import pygame
 import pygame as pg
 
@@ -42,6 +44,7 @@ class PlaceAllShipsState (State):
 			self.temp_ship.length = self.lengths[self.selected_length]
 			self.temp_ship.colour = pg.Color(128, 128, 255, 255)
 
+	draw_channel = 3
 	def draw(self, surface):
 		super().draw(surface)
 		self.temp_ship.draw(surface)

@@ -1,4 +1,6 @@
 import circuits
+from circuits.core.handlers import handler
+
 import pygame
 import pygame as pg
 
@@ -44,8 +46,8 @@ class PlacingShipState (CursorState):
 		if component == self:
 			self.cursor.grid = self.root.grid
 
-	@handler("draw")
-	def _on_draw(self, surface):
+	draw_channel = 3
+	def draw(self, surface):
 		self.cursor.draw(surface)
 
 	def update_cursor(self):

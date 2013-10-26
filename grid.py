@@ -1,6 +1,9 @@
 import circuits
+from circuits.core.handlers import handler
+
 import pygame
-from draw import Drawable, DrawGroup
+
+from draw import Drawable
 
 class CollisionError(Exception):
 	pass
@@ -37,7 +40,7 @@ class Grid (Drawable):
 		super().__init__(*args, **kwargs)
 		self.width = kwargs["width"]
 		self.height = kwargs["height"]
-		self.ships = DrawGroup()
+		self.ships = []
 		self.border_size = 25 # Size of border from edge of window
 		self.square_size = 75 # Size of each square
 		self.square_margin = 20 # Size of inter-square border
@@ -50,10 +53,13 @@ class Grid (Drawable):
 			if ship.collides(other_ship):
 				raise CollisionError()
 		ship.grid = self
+		ship.register(self)
 		self.ships.append(ship)
 
-	@handler("draw")
-	def _on_draw(self, surface):
+	draw_channel = 0
+	def draw(self, surface):
+		print ("Yo' grid gettin' drawn!")
+		super().draw(surface)
 		surface.fill(self.background_colour)
 		for x in range(self.width):
 			for y in range(self.height):
@@ -64,4 +70,3 @@ class Grid (Drawable):
 					self.square_size
 				)
 				surface.fill(self.square_colour, rect)
-		self.ships.draw(surface)

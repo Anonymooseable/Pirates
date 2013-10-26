@@ -1,4 +1,6 @@
 import circuits
+from circuits.core.handlers import handler
+
 import pygame
 import pygame as pg
 
@@ -6,7 +8,6 @@ import grid
 from .state import State
 from util import clamp
 from classes import Vector2
-
 from events import KeyHandler
 
 class CursorState (State):

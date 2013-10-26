@@ -1,6 +1,9 @@
-import circuits
-import draw
 import collections.abc
+
+import circuits
+from circuits.core.handlers import handler
+
+import draw
 
 class Updatable (circuits.BaseComponent):
 	@handler("update")

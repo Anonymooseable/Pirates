@@ -1,4 +1,6 @@
 import circuits
+from circuits.core.handlers import handler
+
 import pygame
 import pygame as pg
 
@@ -19,7 +21,7 @@ class SelectingSquareState (CursorState):
 			self.fire(SelectionConfirmed((self.cursor_x, self.cursor_y)))
 			self.unregister()
 
-	@handler("draw")
-	def _on_draw(self, surface):
+	draw_channel = 3
+	def draw(self, surface):
 		super().draw(surface)
 		pygame.draw.circle(surface, (255, 0, 0), self.cursor_pixelpos, 10) # Draw cursor as a red circle

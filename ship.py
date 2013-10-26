@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import pygame
+
+from circuits.core.handlers import handler
+
 from classes import Vector2
 from draw import Drawable
 
@@ -96,7 +99,8 @@ class Ship (Drawable):
 		elif self.orientation == self.orientations["right"]:
 			return ((x, self.y) for x in range(self.x, self.x + self.length))
 
-	def __init__(self, length = 2, x = 0, y = 0, orientation = "down"):
+	def __init__(self, length = 2, x = 0, y = 0, orientation = "down", *args, **kwargs):
+		super().__init__(*args, **kwargs)
 		self.pos = Vector2(x, y)
 		self.length = int(length)
 		self.damages = []
@@ -124,8 +128,8 @@ class Ship (Drawable):
 					return True
 		return False
 
-	@handler("draw")
-	def _on_draw(self, surface):
+	draw_channel = 1
+	def draw(self, surface):
 		super().draw(surface)
 		if self.grid == None:
 			raise ValueError("No grid found!")

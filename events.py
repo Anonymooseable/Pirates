@@ -1,5 +1,7 @@
 import circuits
 import circuits.core.pollers
+from circuits.core.handlers import handler
+
 import pygame
 
 class Update (circuits.Event):
