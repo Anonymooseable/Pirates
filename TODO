@@ -1,0 +1,2 @@
+ * Check performance of ship.Ship().draw() and optimise
+ * Fix "call"ing draw events rather than firing them

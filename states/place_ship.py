@@ -6,7 +6,7 @@ import pygame as pg
 
 import ship
 from ship import Ship
-from .cursor_state import CursorState
+from .cursor_state import CursorState, CursorModifier
 from events import KeyHandler
 
 class ShipPlaced (circuits.Event):
@@ -39,8 +39,9 @@ class PlacingShipState (CursorState):
 		def _rotate_left(self):
 			new_orientation = (self.cursor.orientation - 1) % 4
 			self.cursor.orientation = new_orientation
-		rotate_right = self.keydown_handler(pg.K_RIGHTBRACKET)(self.cursor_modifier(_rotate_left)(_rotate_right))
-		rotate_left = self.keydown_handler(pg.K_LEFTBRACKET)(self.cursor_modifier(_rotate_right)(_rotate_left))
+
+		self.keydown_handler(pg.K_LEFTBRACKET) (CursorModifier(_rotate_left, _rotate_right))
+		self.keydown_handler(pg.K_RIGHTBRACKET) (CursorModifier(_rotate_right, _rotate_left))
 
 	@handler("registered")
 	def _on_registered(self, component, manager):

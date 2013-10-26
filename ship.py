@@ -8,7 +8,8 @@ from draw import Drawable
 
 default_colour = pygame.Color(128, 128, 128, 255)
 preplaced_colour = pygame.Color(128, 255, 128, 128)
-error_colour = pygame.Color(255, 0, 0, 255)
+prepicked_colour = pygame.Color(128, 128, 255, 128)
+error_colour = pygame.Color(255, 0, 0, 128)
 
 class Ship (Drawable):
 	orientations = {
@@ -70,6 +71,7 @@ class Ship (Drawable):
 			for square in self.squares: # TODO: optimise this using comparisons instead
 				if square in other.squares:
 					return True
+			return False
 		except NameError:
 			return self.onBoat(other)
 
@@ -134,27 +136,24 @@ class Ship (Drawable):
 		if self.grid == None:
 			raise ValueError("No grid found!")
 		else:
-			try:
-				surface.blit(self.sprite, self.grid.square_topleft(self.corner_topleft))
-			except AttributeError:
-				print ("Sprite not generated...")
-				x, y = self.grid.square_topleft(self.corner_topleft)
-				sq_width = self.length if self.horizontal else 1
-				sq_height = self.length if self.vertical else 1
-				width = sq_width * self.grid.square_size + (sq_width - 1 if sq_width > 0 else 0) * self.grid.square_margin
-				height = sq_height * self.grid.square_size + (sq_height - 1 if sq_height > 0 else 0) * self.grid.square_margin
-				surface.fill(
-					self.colour,
-					pygame.Rect(
-						x,
-						y,
-						width,
-						height
-					),
-				)
-				self.sprite = pygame.Surface((width, height), pygame.SRCALPHA, 32)
-				self.sprite.fill(self.colour)
-				self.sprite.set_alpha(self.colour.a)
+			x, y = self.grid.square_topleft(self.corner_topleft)
+			sq_width = self.length if self.horizontal else 1
+			sq_height = self.length if self.vertical else 1
+			width = sq_width * self.grid.square_size + (sq_width - 1 if sq_width > 0 else 0) * self.grid.square_margin
+			height = sq_height * self.grid.square_size + (sq_height - 1 if sq_height > 0 else 0) * self.grid.square_margin
+			'''surface.fill(
+				self.colour,
+				pygame.Rect(
+					x,
+					y,
+					width,
+					height
+				),
+			)'''
+			sprite = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+			sprite.fill(self.colour)
+			sprite.set_alpha(self.colour.a)
+			surface.blit(sprite, (x, y))
 
 	def position_in_grid(self):
 		x, y = self.corner_topleft

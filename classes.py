@@ -28,3 +28,9 @@ class Vector2 (collections.abc.Sequence):
 
 	def __repr__(self):
 		return "%s(%d, %d)" % (self.__class__.__name__, self.x, self.y)
+
+	def __hash__(self):
+		return hash((self.x, self.y))
+
+	def __eq__(self, other):
+		return tuple(other) == tuple(self)

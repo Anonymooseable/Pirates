@@ -10,6 +10,16 @@ from util import clamp
 from classes import Vector2
 from events import KeyHandler
 
+class CursorModifier:
+	def __init__(self, do_modification, reverse_modification):
+		self.do_modification = do_modification
+		self.reverse_modification = reverse_modification
+
+	def __call__(self, state):
+		self.do_modification(state)
+		if not state.cursor_ok():
+			self.reverse_modification(state)
+
 class CursorState (State):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -24,10 +34,10 @@ class CursorState (State):
 		def _right(self):
 			self.cursor.x += 1
 
-		self.left = self.keydown_handler(pg.K_LEFT)(self.cursor_modifier(_right)(_left))
-		self.right = self.keydown_handler(pg.K_RIGHT)(self.cursor_modifier(_left)(_right))
-		self.up = self.keydown_handler(pg.K_UP)(self.cursor_modifier(_down)(_up))
-		self.down = self.keydown_handler(pg.K_DOWN)(self.cursor_modifier(_up)(_down))
+		self.keydown_handler(pg.K_LEFT) (CursorModifier(_left, _right))
+		self.keydown_handler(pg.K_RIGHT) (CursorModifier(_right, _left))
+		self.keydown_handler(pg.K_UP) (CursorModifier(_up, _down))
+		self.keydown_handler(pg.K_DOWN) (CursorModifier(_down, _up))
 
 	def cursor_ok(self):
 		"""Returns true if the currently set cursor is acceptable and False if not.
@@ -45,18 +55,3 @@ By default, will set the cursor_pixelpos attribute to the coordinates in pixels 
 	def _on_registered(self, component, manager):
 		if component == self:
 			self.update_cursor()
-
-	def cursor_modifier(self, reverse_fun): # Decorator for functions that move the cursor
-		"""Wraps a function that will modify the cursor.
-
-This decorator will first check if the new cursor value is acceptable by referring to cursor_ok(), then reset it if not.
-If the new value is acceptable, it will call update_cursor() to take the changes into account."""
-		def wrap(fun):
-			def result(self, *args):
-				fun(self, *args)
-				if not self.cursor_ok():
-					reverse_fun(self)
-				else:
-					self.update_cursor()
-			return result
-		return wrap

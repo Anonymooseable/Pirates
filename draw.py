@@ -49,7 +49,6 @@ class DrawManager (circuits.BaseComponent):
 	@handler("draw", channel = "draw_manager")
 	def _on_draw(self, event, surface):
 		for channel in sorted(self.channels):
-			print ("Calling draw event on channel", channel)
 			self.fire(Draw(surface), channel)
 		self.fire(Draw(surface), "flip")
 		return

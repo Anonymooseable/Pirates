@@ -6,14 +6,14 @@ import pygame as pg
 from .state import State
 from .place_ship import PlacingShipState
 from events import KeyHandler
-from ship import Ship
+import ship
 
 class PlaceAllShipsState (State):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.lengths = [2, 3, 3, 4]
 		self.selected_length = 0
-		self.temp_ship = Ship(length = self.lengths[self.selected_length])
+		self.temp_ship = ship.Ship(length = self.lengths[self.selected_length])
 
 		@self.keydown_handler(pg.K_RETURN)
 		def confirm_ship(self):
@@ -42,7 +42,7 @@ class PlaceAllShipsState (State):
 			self.temp_ship.grid = self.root.grid
 			self.selected_length %= len(self.lengths)
 			self.temp_ship.length = self.lengths[self.selected_length]
-			self.temp_ship.colour = pg.Color(128, 128, 255, 255)
+			self.temp_ship.colour = ship.prepicked_colour
 
 	draw_channel = 3
 	def draw(self, surface):
