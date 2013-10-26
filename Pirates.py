@@ -21,11 +21,14 @@ class PiratesGame:
         def up(self):
             if self.y!=0:
                 self.y -= 1
+        def escape(self):
+            self.running = False
         self.key_handlers = {
             pg.K_LEFT: left,
             pg.K_RIGHT: right,
             pg.K_DOWN: down,
-            pg.K_UP: up
+            pg.K_UP: up,
+            pg.K_ESCAPE: escape
         } # all commands
         self.x_box = {0:25,1:120,2:215,3:310,4:405,5:500}
         self.y_box = {0:25,1:120,2:215,3:310,4:405,5:500}
@@ -106,7 +109,6 @@ class PiratesGame:
             for user in pygame.event.get():
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
                     self.key_handlers[user.key](self)
-
 
                 self.screen.blit(copy_screen,(0,0))
                 self.screen.blit(curs.image,(self.x_box[self.x],self.y_box[self.y]))
