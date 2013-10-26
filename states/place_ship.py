@@ -6,7 +6,6 @@ import ship
 from ship import Ship
 from .cursor_state import CursorState
 from events import KeyHandler
-from classes import Drawable
 
 class ShipPlaced (circuits.Event):
 	"""Fired when the placement of a ship is confirmed by the user"""
@@ -41,21 +40,24 @@ class PlacingShipState (CursorState):
 		rotate_right = self.keydown_handler(pg.K_RIGHTBRACKET)(self.cursor_modifier(_rotate_left)(_rotate_right))
 		rotate_left = self.keydown_handler(pg.K_LEFTBRACKET)(self.cursor_modifier(_rotate_right)(_rotate_left))
 
-	def registered(self, *args):
-		self.cursor.grid = self.root.grid
+	def registered(self, component, manager):
+		if component == self:
+			self.cursor.grid = self.root.grid
 
-	def draw(self, surface):
-		super().draw(surface)
+	@handler("draw")
+	def _on_draw(self, surface):
 		self.cursor.draw(surface)
 
 	def update_cursor(self):
 		pass
 
-	def ship_place_fail(self, event):
+	@handler("ship_place_fail")
+	def _on_ship_place_fail(self, event):
 		self.cursor.colour = ship.error_colour
 		circuits.Timer(0.4, ReturnShipColour()).register(self)
 
-	def return_ship_colour(self, event):
+	@handler("return_ship_colour")
+	def _on_return_ship_colour(self, event):
 		if self.cursor.colour == ship.error_colour:
 			self.cursor.colour = ship.preplaced_colour
 

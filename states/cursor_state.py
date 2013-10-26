@@ -40,8 +40,10 @@ By default, checks if the cursor is within self.root.grid's extents."""
 By default, will set the cursor_pixelpos attribute to the coordinates in pixels of the centre of the square at the coordinates (cursor_x, cursor_y)."""
 		self.cursor_pixelpos = self.root.grid.square_centre(self.cursor)
 
-	def registered(self, *args):
-		self.update_cursor()
+	@handler("registered")
+	def _on_registered(self, component, manager):
+		if component == self:
+			self.update_cursor()
 
 	def cursor_modifier(self, reverse_fun): # Decorator for functions that move the cursor
 		"""Wraps a function that will modify the cursor.

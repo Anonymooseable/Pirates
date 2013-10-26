@@ -1,11 +1,11 @@
 import circuits
 import pygame
-from classes import Drawable, DrawGroup
+from draw import Drawable, DrawGroup
 
 class CollisionError(Exception):
 	pass
 
-class Grid (circuits.Component, Drawable):
+class Grid (Drawable):
 	@property
 	def total_width(self):
 		return self.border_size * 2	+ self.width * self.square_size + (self.width-1) * self.square_margin
@@ -33,10 +33,10 @@ class Grid (circuits.Component, Drawable):
 	def square_bottomright(self, value):
 		return (self.border_far(value[0]), self.border_far(value[1]))
 
-	def __init__(self, width, height):
-		super().__init__()
-		self.width = width
-		self.height = height
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.width = kwargs["width"]
+		self.height = kwargs["height"]
 		self.ships = DrawGroup()
 		self.border_size = 25 # Size of border from edge of window
 		self.square_size = 75 # Size of each square
@@ -44,15 +44,16 @@ class Grid (circuits.Component, Drawable):
 		self.square_colour = pygame.Color(255, 255, 255, 255)
 		self.background_colour = pygame.Color(0, 0, 0, 255)
 
-	def ship_placed(self, event, ship):
+	@handler("ship_placed")
+	def _on_ship_placed(self, event, ship):
 		for other_ship in self.ships:
 			if ship.collides(other_ship):
 				raise CollisionError()
 		ship.grid = self
 		self.ships.append(ship)
 
-	def draw(self, surface):
-		super().draw(surface)
+	@handler("draw")
+	def _on_draw(self, surface):
 		surface.fill(self.background_colour)
 		for x in range(self.width):
 			for y in range(self.height):

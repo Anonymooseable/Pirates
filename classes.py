@@ -1,25 +1,27 @@
 import circuits
+import draw
+import collections.abc
 
-class Drawable:
-	def draw(self, surface):
+class Updatable (circuits.BaseComponent):
+	@handler("update")
+	def _on_update(self, event):
 		pass
 
-class Updatable (circuits.Component):
-	def update(self, event):
-		pass
-
-class DrawGroup (list, Drawable):
-	def draw(self, surface):
-		for i in self:
-			i.draw(surface)
-
-class Vector2:
+class Vector2 (collections.abc.Sequence):
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
 
-	def __list__(self):
-		return [self.x, self.y]
+	def __getitem__(self, index):
+		if index == 0:
+			return self.x
+		elif index == 1:
+			return self.y
+		else:
+			raise IndexError("Index out of range for 2D vector")
 
-	def __tuple__(self):
-		retrun (self.x, self.y)
+	def __len__(self):
+		return 2
+
+	def __repr__(self):
+		return "%s(%d, %d)" % (self.__class__.__name__, self.x, self.y)

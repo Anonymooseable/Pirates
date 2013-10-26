@@ -34,11 +34,13 @@ class PlaceAllShipsState (State):
 			self.selected_length %= len(self.lengths)
 			self.temp_ship.length = self.lengths[self.selected_length]
 
-	def registered(self, *args):
-		self.temp_ship.grid = self.root.grid
-		self.selected_length %= len(self.lengths)
-		self.temp_ship.length = self.lengths[self.selected_length]
-		self.temp_ship.colour = pg.Color(128, 128, 255, 255)
+	@handler("registered")
+	def _on_registered(self, component, manager):
+		if component == self:
+			self.temp_ship.grid = self.root.grid
+			self.selected_length %= len(self.lengths)
+			self.temp_ship.length = self.lengths[self.selected_length]
+			self.temp_ship.colour = pg.Color(128, 128, 255, 255)
 
 	def draw(self, surface):
 		super().draw(surface)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import pygame
-from classes import Drawable, Vector2
+from classes import Vector2
+from draw import Drawable
 
 default_colour = pygame.Color(128, 128, 128, 255)
 preplaced_colour = pygame.Color(128, 255, 128, 128)
@@ -123,7 +124,8 @@ class Ship (Drawable):
 					return True
 		return False
 
-	def draw(self, surface):
+	@handler("draw")
+	def _on_draw(self, surface):
 		super().draw(surface)
 		if self.grid == None:
 			raise ValueError("No grid found!")
@@ -157,5 +159,3 @@ class Ship (Drawable):
 			if self.collides(other):
 				return False
 		return True
-	#def attack(self, _x, _y):
-	#	if self.onBoat(_x, _y):
