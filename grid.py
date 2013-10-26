@@ -58,7 +58,6 @@ class Grid (Drawable):
 
 	draw_channel = 0
 	def draw(self, surface):
-		print ("Yo' grid gettin' drawn!")
 		super().draw(surface)
 		surface.fill(self.background_colour)
 		for x in range(self.width):

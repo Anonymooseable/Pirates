@@ -27,10 +27,11 @@ class Drawable (circuits.BaseComponent):
 		def _on_draw(self, surface):
 			return self.draw(surface)
 		self.real_draw_channel = DrawChannel(self.draw_channel)
-		self._on_draw = handler("draw", channel = self.real_draw_channel)(_on_draw)
+		draw = handler("draw", channel = self.real_draw_channel)(_on_draw)
+		self.addHandler(draw)
 
 	def draw(self, surface):
-		print (self, "got drawn")
+		pass
 
 class Draw (circuits.Event):
 	"""Event fired by the DrawManager to draw the components in its subtree."""
@@ -43,18 +44,16 @@ class DrawManager (circuits.BaseComponent):
 	@handler("registered")
 	def _on_registered(self, component, manager):
 		if isinstance(component, Drawable):
-			print ("Adding draw channel:", component.draw_channel)
-			self.channels.add(DrawChannel(component.draw_channel))
+			self.channels.add(component.real_draw_channel)
 
 	@handler("draw", channel = "draw_manager")
 	def _on_draw(self, event, surface):
 		for channel in sorted(self.channels):
 			print ("Calling draw event on channel", channel)
-			yield self.call(Draw(surface), channel)
-		yield self.call(Draw(surface), "final_flip")
+			self.fire(Draw(surface), channel)
+		self.fire(Draw(surface), "flip")
 		return
 
-	@handler("draw", channel = "final_flip")
+	@handler("draw", channel = "flip")
 	def _on_flip(self, event, surface):
-		print ("flipping")
 		pygame.display.flip()
