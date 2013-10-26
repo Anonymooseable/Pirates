@@ -44,8 +44,8 @@ class Grid (Drawable):
 		self.border_size = 25 # Size of border from edge of window
 		self.square_size = 75 # Size of each square
 		self.square_margin = 20 # Size of inter-square border
-		self.square_colour = pygame.Color(255, 255, 255, 255)
-		self.background_colour = pygame.Color(0, 0, 0, 255)
+		self.square_colour = pygame.Color(128, 128, 255)
+		self.background_colour = pygame.Color(0, 0, 128)
 
 	@handler("ship_placed")
 	def _on_ship_placed(self, event, ship):

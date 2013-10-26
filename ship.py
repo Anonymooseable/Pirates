@@ -8,7 +8,7 @@ from draw import Drawable
 
 default_colour = pygame.Color(128, 128, 128, 255)
 preplaced_colour = pygame.Color(128, 255, 128, 128)
-prepicked_colour = pygame.Color(128, 128, 255, 128)
+prepicked_colour = pygame.Color(255, 255, 0, 128)
 error_colour = pygame.Color(255, 0, 0, 128)
 
 class Ship (Drawable):
