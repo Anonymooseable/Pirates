@@ -3,12 +3,12 @@ from circuits.core.handlers import handler
 import pygame
 
 class DrawChannel:
+	def __setattr__(self, attr, value):
+		raise TypeError("DrawChannel is immutable")
+
 	def __init__(self, index):
-		self.index = index
-		self.hash = hash(self.index)
-		def fail(self, attr, value):
-			raise TypeError("DrawChannel is immutable")
-		self.__setattr__ = fail
+		super().__setattr__("index", index)
+		super().__setattr__("hash", hash(index))
 
 	def __hash__(self):
 		return self.hash
