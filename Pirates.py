@@ -51,7 +51,8 @@ class PiratesGame:
         # Notes for ship generation:
         # 0 = Square free
         # 1 = Ship here
-        for ship_length in [2, 3, 3, 4]:
+        ships = ((1, 2), (2, 3), (3, 3), (4, 4)) # Make an ID and a length for 4 ships
+        for ship_id, ship_length in ships:
             generated = False
             while not generated:
                 x_or_y=random.choice(('horizontal','vertical'))
@@ -66,7 +67,7 @@ class PiratesGame:
                     if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
                         for position_on_ship in range(ship_length): # Same as before
                             x = ship_posx + position_on_ship
-                            self.board[x][ship_posy] = 1 # We are now occupying the square!
+                            self.board[x][ship_posy] = ship_id # We are now occupying the square!
 
                 else:
                     ship_posx=random.randint(0,5)
@@ -79,7 +80,7 @@ class PiratesGame:
                     if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
                         for position_on_ship in range(ship_length): # Same as before
                             y = ship_posy + position_on_ship
-                            self.board[ship_posx][y] = 1 # We are now occupying the square!
+                            self.board[ship_posx][y] = ship_id # We are now occupying the square!
 
 #Drawing the board
         for x, x_pixels in self.x_box.items():
@@ -88,7 +89,10 @@ class PiratesGame:
                 if self.board[x][y] == 0: # If the square is free, draw it blue
                     self.screen.fill((20,70,130),rect)
                 else: # Otherwise grey
-                    self.screen.fill((128,128,128),rect)
+                    c = pygame.Color(0, 0, 0)
+                    value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
+                    c.hsva = (0, 0, value, 100)
+                    self.screen.fill(c,rect)
         copy_screen=pygame.Surface.copy(self.screen)
         pygame.display.flip()
 
