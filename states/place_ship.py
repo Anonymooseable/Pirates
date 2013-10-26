@@ -42,7 +42,8 @@ class PlacingShipState (CursorState):
 		rotate_right = self.keydown_handler(pg.K_RIGHTBRACKET)(self.cursor_modifier(_rotate_left)(_rotate_right))
 		rotate_left = self.keydown_handler(pg.K_LEFTBRACKET)(self.cursor_modifier(_rotate_right)(_rotate_left))
 
-	def registered(self, component, manager):
+	@handler("registered")
+	def _on_registered(self, component, manager):
 		if component == self:
 			self.cursor.grid = self.root.grid
 
