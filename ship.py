@@ -141,15 +141,6 @@ class Ship (Drawable):
 			sq_height = self.length if self.vertical else 1
 			width = sq_width * self.grid.square_size + (sq_width - 1 if sq_width > 0 else 0) * self.grid.square_margin
 			height = sq_height * self.grid.square_size + (sq_height - 1 if sq_height > 0 else 0) * self.grid.square_margin
-			'''surface.fill(
-				self.colour,
-				pygame.Rect(
-					x,
-					y,
-					width,
-					height
-				),
-			)'''
 			sprite = pygame.Surface((width, height), pygame.SRCALPHA, 32)
 			sprite.fill(self.colour)
 			sprite.set_alpha(self.colour.a)
