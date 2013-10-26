@@ -59,11 +59,11 @@ class Ship (Drawable):
 	@property
 	def corner_bottomright(self):
 		if self.orientation in (self.orientations["up"], self.orientations["left"]):
-			return (self.x, self.y)
+			return self.pos
 		elif self.orientation == self.orientations["down"]:
-			return (self.x, self.y + self.length - 1)
+			return Vector2(self.x, self.y + self.length - 1)
 		elif self.orientation == self.orientations["right"]:
-			return (self.x + self.length - 1, self.y)
+			return Vector2(self.x + self.length - 1, self.y)
 
 	def collides(self, other): # Collides either with another ship or a pair of coordinates
 		try:
@@ -91,13 +91,13 @@ class Ship (Drawable):
 	@property
 	def squares(self):
 		if self.orientation == self.orientations["up"]:
-			return ((self.x, y + 1) for y in range(self.y - self.length, self.y))
+			return (Vector2(self.x, y + 1) for y in range(self.y - self.length, self.y))
 		elif self.orientation == self.orientations["down"]:
-			return ((self.x, y) for y in range(self.y, self.y + self.length))
+			return (Vector2(self.x, y) for y in range(self.y, self.y + self.length))
 		elif self.orientation == self.orientations["left"]:
-			return ((x + 1, self.y) for x in range(self.x - self.length, self.x))
+			return (Vector2(x + 1, self.y) for x in range(self.x - self.length, self.x))
 		elif self.orientation == self.orientations["right"]:
-			return ((x, self.y) for x in range(self.x, self.x + self.length))
+			return (Vector2(x, self.y) for x in range(self.x, self.x + self.length))
 
 	def __init__(self, length = 2, x = 0, y = 0, orientation = "down", *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -113,7 +113,7 @@ class Ship (Drawable):
 		if self.orientation == self.orientations["up"]:
 			if _x == self.x:
 				if _y <= self.y and _y >= self.y - self.length:
-					return (self.x)
+					return True
 		elif self.orientation == self.orientations["down"]:
 			if _x == self.x:
 				if _y >= self.y and _y <= self.y + self.length:
