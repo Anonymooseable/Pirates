@@ -9,6 +9,7 @@ import pygame as pg
 from grid import Grid
 from ship import Ship
 from states.place_all_ships import PlaceAllShipsState
+from states.ai_place import AIPlacingShipsState
 from states.target_ships import TargetingState
 from events import Update, KeyDown, KeyUp, KeyHandler, Quit, PygamePoller
 from draw import DrawManager, Draw
@@ -56,3 +57,4 @@ class PiratesGame (KeyHandler):
 
 if __name__ == "__main__":
 	PiratesGame().run()
+	pygame.quit()

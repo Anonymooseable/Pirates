@@ -57,3 +57,23 @@ By default, will set the cursor_pixelpos attribute to the coordinates in pixels 
 	def _on_registered(self, component, manager):
 		if component == self:
 			self.update_cursor()
+
+	@handler("mouse_move")
+	def _on_mouse_move(self, pgevent):
+		mouse_pos = Vector2(pgevent.pos)
+		square = self.root.grid.pixels_to_square(mouse_pos)
+		if square is not None:
+			x, y = square
+			oldx, oldy = self.cursor.x, self.cursor.y
+			def apply(state):
+				state.cursor.x, state.cursor.y = (x, y)
+			def unapply(state):
+				state.cursor.x, state.cursor.y = oldx, oldy
+			CursorModifier(apply, unapply)(self)
+
+	@handler("mouse_down")
+	def _on_mouse_down(self, pgevent):
+		self.complete()
+
+	def complete(self):
+		pass

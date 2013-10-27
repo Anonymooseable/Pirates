@@ -50,7 +50,7 @@ class Vector2 (collections.abc.Sequence):
 	def __mul__(self, other):
 		return Vector2(self.x * other, self.y * other)
 
-AnimatedAttribute = collections.namedtuple("AnimatedAttribute",("begin", "end"))
+AnimatedAttribute = collections.namedtuple("AnimatedAttribute", ("begin", "end"))
 aa = AnimatedAttribute
 
 class Animator (circuits.BaseComponent):
@@ -65,7 +65,7 @@ class Animator (circuits.BaseComponent):
 	@handler("update")
 	def _on_update(self):
 		if self.time < 1:
-			self.time += 1/self.root.FPS / self.total_time
+			self.time += 1 / self.root.FPS / self.total_time
 		else:
 			self.unregister()
 

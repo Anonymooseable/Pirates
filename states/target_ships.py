@@ -23,10 +23,6 @@ class TargetingState (CursorState):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		@self.keydown_handler(pg.K_RETURN)
-		def confirm_target(self):
-			self.fire(SquareAttacked(self.cursor))
-		#self.keydown_handler(pg.K_RETURN) (confirm_target)
 		self.attempts = 0
 
 	draw_channel = 3
@@ -43,3 +39,6 @@ class TargetingState (CursorState):
 		if (len(self.root.grid.ships_live) <= 1 and ship in self.root.grid.ships_live) or len(self.root.grid.ships_live) == 0:
 			self.root.state_queue.append(GameOverState("", self.attempts))
 			self.unregister()
+
+	def complete(self):
+		self.fire(SquareAttacked(self.cursor))

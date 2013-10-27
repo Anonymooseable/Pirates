@@ -6,6 +6,7 @@ import pygame as pg
 
 import ship
 from ship import Ship
+import colours
 from .cursor_state import CursorState, CursorModifier
 from events import KeyHandler
 
@@ -19,18 +20,10 @@ class ReturnShipColour (circuits.Event):
 	"""Fired after ShipPlaceFail to return the ship colour to normal"""
 
 class PlacingShipState (CursorState):
+	ConfirmClass = ShipPlaced
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.cursor = Ship(length = kwargs.pop("ship_length"))
-
-		@self.keydown_handler(pg.K_RETURN)
-		def confirm(self):
-			if self.cursor.position_ok():
-				self.cursor.colour = ship.default_colour
-				self.fire(ShipPlaced(self.cursor))
-				self.unregister()
-			else:
-				self.fire(ShipPlaceFail())
 
 		def _rotate_right(self):
 			new_orientation = (self.cursor.orientation + 1) % 4
@@ -64,6 +57,15 @@ class PlacingShipState (CursorState):
 	def _on_return_ship_colour(self, event):
 		if self.cursor.colour == ship.error_colour:
 			self.cursor.colour = ship.preplaced_colour
+
+	def complete(self):
+		super().complete()
+		if self.cursor.position_ok():
+			self.cursor.colour = colours.default_colour
+			self.fire(ShipPlaced(self.cursor))
+			self.unregister()
+		else:
+			self.fire(ShipPlaceFail())
 
 	def cursor_ok(self):
 		return self.cursor.position_in_grid()

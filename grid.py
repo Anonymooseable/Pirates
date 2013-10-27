@@ -18,11 +18,14 @@ class Grid (Drawable):
 	def total_height(self):
 		return self.border_size * 2	+ self.height * self.square_size + (self.height-1) * self.square_margin
 
-	def pixels_to_squares(self, value):
-		try:
-			return (value - self.border_size) // (self.square_size + self.square_margin)
-		except TypeError:
-			return [self.pixels_to_squares(component) for component in value]
+	def pixels_to_square(self, value):
+		x = (value.x - self.border_size) / (self.square_size + self.square_margin)
+		if x % 1 > self.square_size / (self.square_size + self.square_margin):
+			return None
+		y = (value.y - self.border_size) / (self.square_size + self.square_margin)
+		if y % 1 > self.square_size / (self.square_size + self.square_margin):
+			return None
+		return Vector2(int(x), int(y))
 
 	def border_near(self, value):
 		return (self.border_size + (self.square_size + self.square_margin) * value)
