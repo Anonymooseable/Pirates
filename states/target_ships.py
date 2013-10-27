@@ -5,6 +5,7 @@ import pygame
 import pygame as pg
 
 from .cursor_state import CursorState, CursorModifier
+from .game_over import GameOverState
 from events import KeyHandler
 
 class SquareAttacked (circuits.Event):
@@ -40,5 +41,5 @@ class TargetingState (CursorState):
 	@handler("ship_destroyed")
 	def _on_ship_destroyed(self, ship):
 		if (len(self.root.grid.ships_live) <= 1 and ship in self.root.grid.ships_live) or len(self.root.grid.ships_live) == 0:
-			#self.root.state_queue.append(CompleteState(self.attempts))
+			self.root.state_queue.append(GameOverState("", self.attempts))
 			self.unregister()
