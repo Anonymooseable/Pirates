@@ -8,10 +8,17 @@ from classes import Vector2
 from .place_ship import ShipPlaced
 
 class AIPlacingShipsState (State):
+	"A ship-placement state that places ships randomly then immediately exits."
+	def __init__(self, lengths=[2, 3, 3, 4, 4, 5], *args, **kwargs):
+		"""
+Creates an AIPlacingShipsState. Accepts lengths, a list of integer ship lengths to place."""
+		super().__init__(*args, **kwargs)
+		self.lengths = lengths
+
 	@handler("registered")
 	def _on_registered(self, component, manager):
-		if (component == self):
-			for ship_length in [2, 3, 3, 4]:
+		if (component == self.lengths):
+			for ship_length in :
 				generated = False
 				while not generated:
 					new_ship = ship.Ship()

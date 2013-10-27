@@ -15,12 +15,15 @@ from events import Update, KeyDown, KeyUp, KeyHandler, Quit, PygamePoller
 from draw import DrawManager, Draw
 
 class PiratesGame (KeyHandler):
+	"""
+Runs a battleships game.
+"""
 	FPS = 60
 	def __init__(self):
 		super().__init__()
 		self.pygame_poller = PygamePoller().register(self)
 		self.draw_manager = DrawManager().register(self)
-		self.grid = Grid(width = 6, height = 6).register(self)
+		self.grid = Grid(width = 20, height = 20).register(self)
 		self.state_queue = [AIPlacingShipsState(), TargetingState()]
 		self.next_state()
 		self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)

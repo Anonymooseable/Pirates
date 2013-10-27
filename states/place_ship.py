@@ -20,6 +20,9 @@ class ReturnShipColour (circuits.Event):
 	"""Fired after ShipPlaceFail to return the ship colour to normal"""
 
 class PlacingShipState (CursorState):
+	"""
+State in which a user places a ship.
+"""
 	ConfirmClass = ShipPlaced
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)

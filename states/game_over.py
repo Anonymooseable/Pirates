@@ -9,6 +9,7 @@ from classes import Vector2
 text_colour = pygame.Color(255, 255, 255, 255)
 
 class GameOverState (State):
+	"State that simply shows a game over message."
 	def __init__(self, winner, attempts):
 		super().__init__()
 		self.winner = winner

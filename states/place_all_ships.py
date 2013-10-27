@@ -9,9 +9,16 @@ from events import KeyHandler
 import ship
 
 class PlaceAllShipsState (State, KeyHandler):
-	def __init__(self, *args, **kwargs):
+	"""
+State for getting a user to place ships.
+
+Allows the user to select from a list of ships, then delegates the task of
+placing the ships to PlacingShipStates. Repeats for all the ships provided
+to its constructor.
+"""
+	def __init__(self, ship_lengths, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.lengths = [2, 3, 3, 4]
+		self.lengths = ship_lengths
 		self.selected_length = 0
 		self.temp_ship = ship.Ship(length = self.lengths[self.selected_length])
 
@@ -20,7 +27,8 @@ class PlaceAllShipsState (State, KeyHandler):
 			length = self.lengths.pop(self.selected_length)
 			if self.lengths: # If we have any more ships to insert afterwards
 				self.root.state_queue.insert(0, self) # We add ourself to the queue as well
-			self.root.state_queue.insert(0, PlacingShipState(ship_length = length)) # Add a ship placement to the top of the state queue
+			# Add a ship placement to the top of the state queue
+			self.root.state_queue.insert(0, PlacingShipState(ship_length = length))
 			self.unregister() # And pass on to it by unregistering ourselves
 
 		@self.keydown_handler(pg.K_PLUS)

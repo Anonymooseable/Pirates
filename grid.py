@@ -11,6 +11,7 @@ class CollisionError(Exception):
 	pass
 
 class Grid (Drawable):
+	"""Manages the playing field and the various arithmetic operations related to it."""
 	@property
 	def total_width(self):
 		return self.border_size * 2	+ self.width * self.square_size + (self.width-1) * self.square_margin
@@ -19,6 +20,7 @@ class Grid (Drawable):
 		return self.border_size * 2	+ self.height * self.square_size + (self.height-1) * self.square_margin
 
 	def pixels_to_square(self, value):
+		"""Converts a Vector2 containing a position in pixels to the coordinates of the square they belong to, or None if there is none."""
 		x = (value.x - self.border_size) / (self.square_size + self.square_margin)
 		if x % 1 > self.square_size / (self.square_size + self.square_margin):
 			return None
@@ -48,8 +50,8 @@ class Grid (Drawable):
 		self.ships = []
 		self.ships_live = []
 		self.border_size = 25 # Size of border from edge of window
-		self.square_size = 75 # Size of each square
-		self.square_margin = 20 # Size of inter-square border
+		self.square_size = 15 # Size of each square
+		self.square_margin = 5 # Size of inter-square border
 		self.all_visible = True
 		# (status, ship)
 		# status is:

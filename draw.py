@@ -3,6 +3,7 @@ from circuits.core.handlers import handler
 import pygame
 
 class DrawChannel:
+	"""Not intended for external use."""
 	def __setattr__(self, attr, value):
 		raise TypeError("DrawChannel is immutable")
 
@@ -20,6 +21,13 @@ class DrawChannel:
 		return "%s %d" % (self.__class__.__name__, self.index)
 
 class Drawable (circuits.BaseComponent):
+	"""
+Component that will respond to draw events on the right channel.
+
+Should generally define a draw_channel (integer) in the class, which will
+determine when it will be drawn in relation to other Drawables (higher channel
+number = later draw)
+"""
 	draw_channel = 50
 	real_draw_channel = None
 	def __init__(self, *args, **kwargs):
@@ -37,6 +45,7 @@ class Draw (circuits.Event):
 	"""Event fired by the DrawManager to draw the components in its subtree."""
 
 class DrawManager (circuits.BaseComponent):
+	"""Handles drawing of all Drawables registered with it."""
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.channels = set()

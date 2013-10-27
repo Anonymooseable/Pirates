@@ -10,6 +10,12 @@ import pygame
 import draw
 
 class Vector2 (collections.abc.Sequence):
+	"""Class for storing a 2-dimensional vector.
+
+Usable in pygame when coordinates or sizes are needed, but also supports some
+vector functions like addition/subtraction with other vectors, or
+multiplication by a real.
+"""
 	def __init__(self, x, y = None):
 		if y is not None:
 			self.x = x
@@ -39,6 +45,7 @@ class Vector2 (collections.abc.Sequence):
 		return tuple(other) == tuple(self)
 
 	def int(self):
+		"Returns a vector with the two components truncated to integers."
 		return Vector2(int(self.x), int(self.y))
 
 	def __add__(self, other):
@@ -50,10 +57,14 @@ class Vector2 (collections.abc.Sequence):
 	def __mul__(self, other):
 		return Vector2(self.x * other, self.y * other)
 
-AnimatedAttribute = collections.namedtuple("AnimatedAttribute", ("begin", "end"))
-aa = AnimatedAttribute
-
 class Animation (circuits.BaseComponent):
+	"""
+Interpolates a value from begin to end linearly over a period of total_time.
+
+Assumes that it is registered in a tree with a root having an FPS member and
+firing an update event every 1/FPS seconds.
+
+Query value to get "current" value."""
 	def __init__(self, total_time, begin, end):
 		super().__init__()
 		self._time = 0.0
@@ -70,8 +81,12 @@ class Animation (circuits.BaseComponent):
 			self.value = self.end
 			self.unregister()
 
-
 class ColourAnimation (circuits.BaseComponent):
+	"""
+Interpolates a pygame.Color from c1 to c2 linearly over a period of total_time.
+
+Query value to get the "current" colour.
+"""
 	def __init__(self, total_time, c1, c2):
 		super().__init__()
 		self._r = Animation(total_time, c1.r, c2.r).register(self)

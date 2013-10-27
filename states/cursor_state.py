@@ -11,6 +11,15 @@ from classes import Vector2
 from events import KeyHandler
 
 class CursorModifier:
+	"""
+A function object that modifies a cursor.
+
+Used to wrap a function and its inverse, to allow attempting the modification
+then reversing it if the resulting cursor is bad, as well as calling the
+state's update_cursor function.
+
+Create using CursorModifier(function, reverse_function), then register as an
+event handler or call directly."""
 	def __init__(self, do_modification, reverse_modification):
 		self.do_modification = do_modification
 		self.reverse_modification = reverse_modification
@@ -23,6 +32,17 @@ class CursorModifier:
 			state.update_cursor()
 
 class CursorState (State, KeyHandler):
+	"""
+Superclass for any State that maintains a cursor.
+
+Members:
+cursor - an object representing the cursor. Needs x and y members, but can be
+of any class.
+cursor_ok - function that returns whether the currently set cursor's value is
+"ok": in bounds, etc...
+update_cursor - function that performs any actions necessary after modifying
+the cursor, such as updating the coordinates of the visual representation of
+the cursor. """
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.cursor = Vector2(0, 0)
@@ -42,15 +62,18 @@ class CursorState (State, KeyHandler):
 		self.keydown_handler(pg.K_DOWN) (CursorModifier(_down, _up))
 
 	def cursor_ok(self):
-		"""Returns true if the currently set cursor is acceptable and False if not.
+		"""
+Returns true if the currently set cursor is acceptable and False if not.
 
 By default, checks if the cursor is within self.root.grid's extents."""
 		return 0 <= self.cursor.x < self.root.grid.width and 0 <= self.cursor.y < self.root.grid.height
 
 	def update_cursor(self): # Updates the coordinates (in pixels) of the cursor
-		"""Updates the cursor.
+		"""
+Updates the cursor.
 
-By default, will set the cursor_pixelpos attribute to the coordinates in pixels of the centre of the square at the coordinates (cursor_x, cursor_y)."""
+By default, will set the cursor_pixelpos attribute to the coordinates in
+pixels of the centre of the square at the coordinates (cursor_x, cursor_y)."""
 		self.cursor_pixelpos = self.root.grid.square_centre(self.cursor)
 
 	@handler("registered")

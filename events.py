@@ -38,6 +38,18 @@ class QuitRequest (circuits.Event):
 	"""User requested quit (pressing escape, closing window...)"""
 
 class KeyHandler (circuits.BaseComponent):
+	"""
+Component that will handle key events.
+
+Contains decorators keydown_handler and keyup_handler, which can be used to
+register a function as a handler for the specified key.
+Example:
+class SomeHandler (KeyHandler):
+	def __init__(self):
+		@self.keydown_handler(pygame.K_p)
+		def p_pressed(self):
+			print ("The P key was pressed down.")
+"""
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.keydown_handlers = {}
@@ -66,6 +78,7 @@ class KeyHandler (circuits.BaseComponent):
 			self.keyup_handlers[pygame_event.key](self)
 
 class PygamePoller (circuits.core.pollers.BasePoller):
+	"""Polls pygame for events and translates them into circuits events."""
 	def _generate_events(self, event):
 		for event in pygame.event.get():
 			if event.type == pygame.KEYDOWN:
