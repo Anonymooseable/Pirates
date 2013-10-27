@@ -66,6 +66,8 @@ class Animator (circuits.BaseComponent):
 	def _on_update(self):
 		if self.time < 1:
 			self.time += 1/self.root.FPS / self.total_time
+		else:
+			self.unregister()
 
 	def _attribute_calculator (self, attribute):
 		def _attribute(self):
@@ -94,13 +96,3 @@ class ColourAnimator(Animator):
 
 	def colour(self):
 		return pygame.Color(self.r(), self.g(), self.b(), self.a())
-
-def animate_colour(total_time, c1, c2):
-	kwargs = ({} if not (hasattr(c1, "a") and hasattr(c2, "a")) else {"a": aa(c1.a, c2.a)})
-	return AnimatedColour(
-		total_time,
-		r = aa(c1.r, c2.r),
-		g = aa(c1.g, c2.g),
-		b = aa(c1.b, c2.b),
-		**kwargs
-	)
