@@ -9,6 +9,7 @@ import pygame as pg
 from grid import Grid
 from ship import Ship
 from states.place_all_ships import PlaceAllShipsState
+from states.target_ships import TargetingState
 from events import Update, KeyDown, KeyUp, KeyHandler, Quit, PygamePoller
 from draw import DrawManager, Draw
 
@@ -19,7 +20,7 @@ class PiratesGame (KeyHandler):
 		self.pygame_poller = PygamePoller().register(self)
 		self.draw_manager = DrawManager().register(self)
 		self.grid = Grid(width = 6, height = 6).register(self)
-		self.state_queue = [PlaceAllShipsState()]
+		self.state_queue = [PlaceAllShipsState(), TargetingState()]
 		self.next_state()
 		self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)
 

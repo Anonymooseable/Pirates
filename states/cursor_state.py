@@ -19,6 +19,8 @@ class CursorModifier:
 		self.do_modification(state)
 		if not state.cursor_ok():
 			self.reverse_modification(state)
+		else:
+			state.update_cursor()
 
 class CursorState (State):
 	def __init__(self, *args, **kwargs):

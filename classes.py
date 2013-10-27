@@ -11,9 +11,13 @@ class Updatable (circuits.BaseComponent):
 		pass
 
 class Vector2 (collections.abc.Sequence):
-	def __init__(self, x, y):
-		self.x = x
-		self.y = y
+	def __init__(self, x, y = None):
+		if y is not None:
+			self.x = x
+			self.y = y
+		else:
+			self.x = x[0]
+			self.y = x[1]
 
 	def __getitem__(self, index):
 		if index == 0:
@@ -34,3 +38,15 @@ class Vector2 (collections.abc.Sequence):
 
 	def __eq__(self, other):
 		return tuple(other) == tuple(self)
+
+	def int(self):
+		return Vector2(int(self.x), int(self.y))
+
+	def __add__(self, other):
+		return Vector2(self.x + other.x, self.y + other.y)
+
+	def __sub__(self, other):
+		return Vector2(self.x - other.x, self.y - other.y)
+
+	def __mul__(self, other):
+		return Vector2(self.x * other, self.y * other)

@@ -43,6 +43,7 @@ class PlaceAllShipsState (State):
 			self.selected_length %= len(self.lengths)
 			self.temp_ship.length = self.lengths[self.selected_length]
 			self.temp_ship.colour = ship.prepicked_colour
+			self.root.grid.all_visible = True
 
 	draw_channel = 3
 	def draw(self, surface):

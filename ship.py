@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import pygame
 
+import circuits
 from circuits.core.handlers import handler
 
 from classes import Vector2
 from draw import Drawable
 
-default_colour = pygame.Color(128, 128, 128, 255)
-preplaced_colour = pygame.Color(128, 255, 128, 128)
-prepicked_colour = pygame.Color(255, 255, 0, 128)
-error_colour = pygame.Color(255, 0, 0, 128)
+from colours import default_colour, preplaced_colour, prepicked_colour, error_colour, destroyed_colour
+
+class ShipDestroyed (circuits.Event):
+	"""Fired by a ship when it gets destroyed."""
 
 class Ship (Drawable):
 	orientations = {
@@ -89,7 +90,6 @@ class Ship (Drawable):
 	def y(self, value):
 		self.pos.y = value
 
-
 	@property
 	def squares(self):
 		if self.orientation == self.orientations["up"]:
@@ -101,14 +101,26 @@ class Ship (Drawable):
 		elif self.orientation == self.orientations["right"]:
 			return (Vector2(x, self.y) for x in range(self.x, self.x + self.length))
 
+	@property
+	def damages(self):
+		return self._damages
+	@damages.setter
+	def damages(self, value):
+		self._damages = value
+		if self._damages >= self.length:
+			self.fire(ShipDestroyed(self))
+			self.colour = destroyed_colour
+			self.destroyed = True
+
 	def __init__(self, length = 2, x = 0, y = 0, orientation = "down", *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.pos = Vector2(x, y)
 		self.length = int(length)
-		self.damages = []
+		self.damages = 0
 		self.orientation = orientation
 		self.grid = None
 		self.colour = preplaced_colour
+		self.destroyed = False
 
 	def onBoat(self, square): # Ugly function for testing if a square belongs to the boat (should be faster than square in self.squares)
 		_x, _y = square
@@ -135,16 +147,20 @@ class Ship (Drawable):
 		super().draw(surface)
 		if self.grid == None:
 			raise ValueError("No grid found!")
-		else:
-			x, y = self.grid.square_topleft(self.corner_topleft)
-			sq_width = self.length if self.horizontal else 1
-			sq_height = self.length if self.vertical else 1
-			width = sq_width * self.grid.square_size + (sq_width - 1 if sq_width > 0 else 0) * self.grid.square_margin
-			height = sq_height * self.grid.square_size + (sq_height - 1 if sq_height > 0 else 0) * self.grid.square_margin
-			sprite = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+		elif self.grid.all_visible or self.destroyed:
+			top_left = self.grid.square_topleft(self.corner_topleft)
+			bottom_right = self.grid.square_bottomright(self.corner_bottomright)
+
+			margin = self.grid.square_size / 7
+			top_left += Vector2(margin, margin)
+			bottom_right -= Vector2(margin, margin)
+
+			size = bottom_right - top_left
+
+			sprite = pygame.Surface(size, pygame.SRCALPHA, 32)
 			sprite.fill(self.colour)
 			sprite.set_alpha(self.colour.a)
-			surface.blit(sprite, (x, y))
+			surface.blit(sprite, top_left)
 
 	def position_in_grid(self):
 		x, y = self.corner_topleft
