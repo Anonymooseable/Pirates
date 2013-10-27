@@ -1,8 +1,8 @@
 from pygame import Color
 # Grid colours
 square_colour_visible = Color(128, 128, 255)
-square_colour_hidden = Color(128, 128, 192)
-square_colour_visible_ship = Color(0, 0, 255)
+square_colour_hidden = Color(64, 64, 96)
+square_colour_visible_ship = Color(0, 0, 192)
 background_colour = Color(0, 32, 64)
 
 # Ship colours

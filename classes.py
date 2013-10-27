@@ -53,46 +53,33 @@ class Vector2 (collections.abc.Sequence):
 AnimatedAttribute = collections.namedtuple("AnimatedAttribute", ("begin", "end"))
 aa = AnimatedAttribute
 
-class Animator (circuits.BaseComponent):
-	def __init__(self, total_time, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.time = 0.0
-		self.total_time = total_time
-
-		for key, value in kwargs.items():
-			setattr(self, key, property(self._attribute_calculator(value)))
+class Animation (circuits.BaseComponent):
+	def __init__(self, total_time, begin, end):
+		super().__init__()
+		self._time = 0.0
+		self._total_time = total_time
+		self.value = self.begin = begin
+		self.end = end
 
 	@handler("update")
 	def _on_update(self):
-		if self.time < 1:
-			self.time += 1 / self.root.FPS / self.total_time
+		self._time += 1 / self.root.FPS / self._total_time
+		if self._time < 1:
+			self.value = self.begin + (self.end - self.begin) * self._time
 		else:
+			self.value = self.end
 			self.unregister()
 
-	def _attribute_calculator (self, attribute):
-		def _attribute(self):
-			return attribute.begin + (attribute.end - attribute.begin) * self.time
-		return _attribute
 
-class ColourAnimator(Animator):
+class ColourAnimation (circuits.BaseComponent):
 	def __init__(self, total_time, c1, c2):
-		super().__init__(total_time)
-		self._r = AnimatedAttribute(c1.r, c2.r)
-		self._g = AnimatedAttribute(c1.g, c2.g)
-		self._b = AnimatedAttribute(c1.b, c2.b)
-		self._a = AnimatedAttribute(c1.a, c2.a)
-	def r(self):
-		attribute = self._r
-		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
-	def g(self):
-		attribute = self._g
-		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
-	def b(self):
-		attribute = self._b
-		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
-	def a(self):
-		attribute = self._a
-		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
+		super().__init__()
+		self._r = Animation(total_time, c1.r, c2.r).register(self)
+		self._g = Animation(total_time, c1.g, c2.g).register(self)
+		self._b = Animation(total_time, c1.b, c2.b).register(self)
+		self._a = Animation(total_time, c1.a, c2.a).register(self)
 
-	def colour(self):
-		return pygame.Color(self.r(), self.g(), self.b(), self.a())
+	@property
+	def value(self):
+		c = [int(i.value) for i in [self._r, self._g, self._b, self._a]]
+		return pygame.Color(*c)

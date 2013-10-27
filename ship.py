@@ -4,7 +4,7 @@ import pygame
 import circuits
 from circuits.core.handlers import handler
 
-from classes import Vector2, ColourAnimator
+from classes import Vector2, ColourAnimation
 from draw import Drawable
 
 from colours import default_colour, preplaced_colour, prepicked_colour, error_colour, destroyed_colour
@@ -109,7 +109,7 @@ class Ship (Drawable):
 		self._damages = value
 		if self._damages >= self.length:
 			self.fire(ShipDestroyed(self))
-			self.colour = ColourAnimator(4.0, self.colour, destroyed_colour).register(self)
+			self.colour = ColourAnimation(4.0, default_colour, destroyed_colour).register(self)
 			self.destroyed = True
 
 	def __init__(self, length = 2, x = 0, y = 0, orientation = "down", *args, **kwargs):
@@ -159,8 +159,7 @@ class Ship (Drawable):
 
 			sprite = pygame.Surface(size, pygame.SRCALPHA, 32)
 			try:
-				sprite.fill(self.colour.colour())
-				#sprite.set_alpha(self.colour.a)
+				sprite.fill(self.colour.value)
 			except AttributeError:
 				sprite.fill(self.colour)
 			surface.blit(sprite, top_left)
