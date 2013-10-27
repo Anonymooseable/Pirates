@@ -21,7 +21,7 @@ class PiratesGame (KeyHandler):
 		self.pygame_poller = PygamePoller().register(self)
 		self.draw_manager = DrawManager().register(self)
 		self.grid = Grid(width = 6, height = 6).register(self)
-		self.state_queue = [PlaceAllShipsState(), TargetingState()]
+		self.state_queue = [AIPlacingShipsState(), TargetingState()]
 		self.next_state()
 		self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)
 
