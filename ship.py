@@ -4,7 +4,7 @@ import pygame
 import circuits
 from circuits.core.handlers import handler
 
-from classes import Vector2
+from classes import Vector2, ColourAnimator
 from draw import Drawable
 
 from colours import default_colour, preplaced_colour, prepicked_colour, error_colour, destroyed_colour
@@ -109,7 +109,7 @@ class Ship (Drawable):
 		self._damages = value
 		if self._damages >= self.length:
 			self.fire(ShipDestroyed(self))
-			self.colour = destroyed_colour
+			self.colour = ColourAnimator(4.0, self.colour, destroyed_colour).register(self)
 			self.destroyed = True
 
 	def __init__(self, length = 2, x = 0, y = 0, orientation = "down", *args, **kwargs):
@@ -158,8 +158,11 @@ class Ship (Drawable):
 			size = bottom_right - top_left
 
 			sprite = pygame.Surface(size, pygame.SRCALPHA, 32)
-			sprite.fill(self.colour)
-			sprite.set_alpha(self.colour.a)
+			try:
+				sprite.fill(self.colour.colour())
+				#sprite.set_alpha(self.colour.a)
+			except AttributeError:
+				sprite.fill(self.colour)
 			surface.blit(sprite, top_left)
 
 	def position_in_grid(self):

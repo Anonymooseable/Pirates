@@ -1,14 +1,13 @@
 import collections.abc
+import collections
+import numbers
 
 import circuits
 from circuits.core.handlers import handler
 
-import draw
+import pygame
 
-class Updatable (circuits.BaseComponent):
-	@handler("update")
-	def _on_update(self, event):
-		pass
+import draw
 
 class Vector2 (collections.abc.Sequence):
 	def __init__(self, x, y = None):
@@ -50,3 +49,58 @@ class Vector2 (collections.abc.Sequence):
 
 	def __mul__(self, other):
 		return Vector2(self.x * other, self.y * other)
+
+AnimatedAttribute = collections.namedtuple("AnimatedAttribute",("begin", "end"))
+aa = AnimatedAttribute
+
+class Animator (circuits.BaseComponent):
+	def __init__(self, total_time, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.time = 0.0
+		self.total_time = total_time
+
+		for key, value in kwargs.items():
+			setattr(self, key, property(self._attribute_calculator(value)))
+
+	@handler("update")
+	def _on_update(self):
+		if self.time < 1:
+			self.time += 1/self.root.FPS / self.total_time
+
+	def _attribute_calculator (self, attribute):
+		def _attribute(self):
+			return attribute.begin + (attribute.end - attribute.begin) * self.time
+		return _attribute
+
+class ColourAnimator(Animator):
+	def __init__(self, total_time, c1, c2):
+		super().__init__(total_time)
+		self._r = AnimatedAttribute(c1.r, c2.r)
+		self._g = AnimatedAttribute(c1.g, c2.g)
+		self._b = AnimatedAttribute(c1.b, c2.b)
+		self._a = AnimatedAttribute(c1.a, c2.a)
+	def r(self):
+		attribute = self._r
+		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
+	def g(self):
+		attribute = self._g
+		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
+	def b(self):
+		attribute = self._b
+		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
+	def a(self):
+		attribute = self._a
+		return int(attribute.begin + (attribute.end - attribute.begin) * self.time)
+
+	def colour(self):
+		return pygame.Color(self.r(), self.g(), self.b(), self.a())
+
+def animate_colour(total_time, c1, c2):
+	kwargs = ({} if not (hasattr(c1, "a") and hasattr(c2, "a")) else {"a": aa(c1.a, c2.a)})
+	return AnimatedColour(
+		total_time,
+		r = aa(c1.r, c2.r),
+		g = aa(c1.g, c2.g),
+		b = aa(c1.b, c2.b),
+		**kwargs
+	)

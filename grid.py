@@ -53,6 +53,7 @@ class Grid (Drawable):
 		# 0 - invisible
 		# 1 - visible
 		# 2 - visible, destroyed ship
+		# 3 - visible, damaged ship
 		self.squares = [[(0, None) for y in range(self.height)] for x in range(self.width)]
 
 	@handler("ship_placed")
@@ -81,7 +82,7 @@ class Grid (Drawable):
 		for x, row in enumerate(self.squares):
 			for y, square in enumerate(row):
 				if square[1] == ship:
-					self.squares[x][y] = (3, ship)
+					self.squares[x][y] = (2, ship)
 		self.ships_live.remove(ship)
 
 	draw_channel = 0
@@ -100,9 +101,9 @@ class Grid (Drawable):
 					)
 					if square_status == 0:
 						surface.fill(square_colour_hidden, rect)
-					elif square_status in (1, 2):
+					elif square_status == 1:
 						surface.fill(square_colour_visible, rect)
-					elif square_status == 3:
+					elif square_status in (2, 3):
 						surface.fill(square_colour_visible_ship, rect)
 		else:
 			for x in range(self.width):
