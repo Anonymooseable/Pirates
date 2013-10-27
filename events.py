@@ -19,6 +19,18 @@ class KeyDown (KeyEvent):
 class KeyUp (KeyEvent):
 	"""KeyUp Event"""
 
+class MouseEvent (PygameEvent):
+	"""Generic Mouse event"""
+
+class MouseDown (MouseEvent):
+	"""MouseDown Event"""
+
+class MouseUp (MouseEvent):
+	"""MouseUp Event"""
+
+class MouseMove(MouseEvent):
+	"""MouseMove Event"""
+
 class Quit (PygameEvent):
 	"""Fired when a pygame.QUIT event is fired (window closed)"""
 
@@ -62,6 +74,11 @@ class PygamePoller (circuits.core.pollers.BasePoller):
 				self.fire(KeyUp(event))
 			elif event.type == pygame.QUIT:
 				self.fire(Quit(event))
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				self.fire(MouseDown(event))
+			elif event.type == pygame.MOUSEBUTTONUP:
+				self.fire(MouseUp(event))
+			elif event.type == pygame.MOUSEMOTION:
+				self.fire(MouseMove(event))
 			else:
 				self.fire(PygameEvent(event))
-
