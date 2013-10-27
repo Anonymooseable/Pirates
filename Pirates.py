@@ -5,6 +5,14 @@ import pygame as pg
 import random
 class PiratesGame:
     def __init__(self):
+        pygame.init()
+
+        self.screen = pygame.display.set_mode((600, 600))#Creating a display creates a default surface: here we called it screen.(remember: 25px on sides, 20px between squares, 75px per square and half a square=37px 
+        pygame.display.set_caption('Yarrrr!!')
+        self.screen.fill((90,50,5))
+        
+        self.copy_screen=pygame.Surface.copy(self.screen)
+        
         self.x = 0
         self.y = 0
         self.x_rect = 0
@@ -23,12 +31,25 @@ class PiratesGame:
                 self.y -= 1
         def escape(self):
             self.running = False
+        def fire(self):
+            if self.board[self.y][self.x]==0:
+                self.screen.blit(self.copy_screen,(0,0))
+                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
+                self.screen.fill((90,170,190),rect)
+                self.copy_screen=pygame.Surface.copy(self.screen)
+            else:
+                self.screen.blit(self.copy_screen,(0,0))
+                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
+                self.screen.fill((240,150,75),rect)
+                self.copy_screen=pygame.Surface.copy(self.screen)
+                
         self.key_handlers = {
             pg.K_LEFT: left,
             pg.K_RIGHT: right,
             pg.K_DOWN: down,
             pg.K_UP: up,
-            pg.K_ESCAPE: escape
+            pg.K_ESCAPE: escape,
+            pg.K_RETURN: fire
         } # all commands
         self.x_box = {0:25,1:120,2:215,3:310,4:405,5:500}
         self.y_box = {0:25,1:120,2:215,3:310,4:405,5:500}
@@ -37,12 +58,9 @@ class PiratesGame:
         self.running = False
 
     def run(self):
-        pygame.init()
 
         self.running = True
-        self.screen = pygame.display.set_mode((600, 600))#Creating a display creates a default surface: here we called it screen.(remember: 25px on sides, 20px between squares, 75px per square and half a square=37px 
-        pygame.display.set_caption('Yarrrr!!')
-        self.screen.fill((90,50,5))
+        
 
 #Generating ship positions
         generated=False
@@ -81,8 +99,7 @@ class PiratesGame:
                         for position_on_ship in range(ship_length): # Same as before
                             y = ship_posy + position_on_ship
                             self.board[ship_posx][y] = ship_id # We are now occupying the square!
-
-#Drawing the board
+   #Drawing the board
         for x, x_pixels in self.x_box.items():
             for y, y_pixels in self.y_box.items():
                 rect=pygame.Rect(x_pixels,y_pixels,75,75)  #(x,y,width,height)
@@ -93,10 +110,9 @@ class PiratesGame:
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
                     self.screen.fill(c,rect)
-        copy_screen=pygame.Surface.copy(self.screen)
         pygame.display.flip()
-
-
+        self.copy_screen=pygame.Surface.copy(self.screen)
+        
         curs = pygame.sprite.Sprite()
         curs.image = pygame.image.load("Cross hair.png").convert_alpha()
         curs.rect = curs.image.get_rect()
@@ -106,7 +122,7 @@ class PiratesGame:
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
                     self.key_handlers[user.key](self)
 
-                self.screen.blit(copy_screen,(0,0))
+                self.screen.blit(self.copy_screen,(0,0))
                 self.screen.blit(curs.image,(self.x_box[self.x],self.y_box[self.y]))
                 pygame.display.flip()
 
