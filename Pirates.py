@@ -32,7 +32,7 @@ class PiratesGame:
         def escape(self):
             self.running = False
         def fire(self):
-            if self.board[self.y][self.x]==0:
+            if self.board[self.x][self.y]==0:
                 self.screen.blit(self.copy_screen,(0,0))
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
                 self.screen.fill((90,170,190),rect)
