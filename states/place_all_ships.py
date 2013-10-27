@@ -8,7 +8,7 @@ from .place_ship import PlacingShipState
 from events import KeyHandler
 import ship
 
-class PlaceAllShipsState (State):
+class PlaceAllShipsState (State, KeyHandler):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.lengths = [2, 3, 3, 4]

@@ -22,7 +22,7 @@ class CursorModifier:
 		else:
 			state.update_cursor()
 
-class CursorState (State):
+class CursorState (State, KeyHandler):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.cursor = Vector2(0, 0)
