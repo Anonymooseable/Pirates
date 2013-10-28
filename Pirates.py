@@ -30,9 +30,9 @@ class PiratesGame:
         self.splash = pygame.sprite.Sprite()
         self.splash.image = pygame.image.load("splash.png").convert_alpha()
         self.splash.rect = self.splash.image.get_rect()
-        
+
         self.screen.blit(self.boardfile.image,(0,0))
-        
+
         self.copy_screen=pygame.Surface.copy(self.screen)
         self.ani_copy_screen=pygame.Surface.copy(self.screen)
         #Vars----------------------------
@@ -79,7 +79,7 @@ class PiratesGame:
             pg.K_UP: up,
             pg.K_ESCAPE: escape,
             pg.K_RETURN: fire
-        } 
+        }
         self.x_box = {0:25,1:120,2:215,3:310,4:405,5:500}
         self.y_box = {0:25,1:120,2:215,3:310,4:405,5:500}
         self.board = [[-1 for y in range(6)] for x in range(6)]
@@ -133,15 +133,15 @@ class PiratesGame:
         self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
         pygame.display.flip()
         self.copy_screen=pygame.Surface.copy(self.screen)
-            
+
         # Set up main menu
-        self.main_menu_image = pygame.Surface(self.screen.get_size())
         self.menu_item_heights = [50, 150, 250, 350, 450]
         self.menu_font = pygame.font.Font("FortuneCookieNF.ttf", 48)
         def menu_text(text):
             return self.menu_font.render(text, True, (255, 255, 255))
-        self.menu_select_market = menu_text(">")
+        self.menu_select_marker = menu_text(">")
 
+        self.main_menu_image = pygame.Surface(self.screen.get_size())
         self.main_menu_start = menu_text("Start Game")
         self.main_menu_easy = menu_text("Easy >")
         self.main_menu_medium = menu_text("< Medium >")
@@ -150,12 +150,16 @@ class PiratesGame:
         self.main_menu_sel = 0
         self.main_menu_difficulty = 0 # 0 = easy, 1 = medium, 2 = hard
 
+        self.quit_menu_image = pygame.Surface(self.screen.get_size())
         self.quit_menu_really = menu_text("Really quit?")
         self.quit_menu_yes = menu_text("Yes")
         self.quit_menu_no = menu_text("No")
+        self.quit_menu_confirm = True
 
         self.running = False
-        self.state = "targeting"
+        self.state = "main menu"
+        self.redraw_main_menu()
+        self.draw_quit_menu()
 
     def redraw_main_menu(self):
         self.main_menu_image.fill((0, 0, 0))
@@ -171,6 +175,14 @@ class PiratesGame:
         self.main_menu_image.blit(difficulty_image, (center_horiz_pos(difficulty_image), self.menu_item_heights[1]))
         self.main_menu_image.blit(self.main_menu_quit, (center_horiz_pos(self.main_menu_quit), self.menu_item_heights[2]))
 
+    def draw_quit_menu(self):
+        self.quit_menu_image.fill((0, 0, 0))
+        def center_horiz_pos(item):
+            return int(self.screen.get_width() / 2 - item.get_width() / 2)
+        self.quit_menu_image.blit(self.quit_menu_really, (center_horiz_pos(self.quit_menu_really), self.menu_item_heights[0]))
+        self.quit_menu_image.blit(self.quit_menu_yes, (center_horiz_pos(self.quit_menu_yes), self.menu_item_heights[1]))
+        self.quit_menu_image.blit(self.quit_menu_no, (center_horiz_pos(self.quit_menu_no), self.menu_item_heights[2]))
+
     def run(self):
         self.running = True
         clock=pygame.time.Clock()
@@ -178,9 +190,44 @@ class PiratesGame:
             clock.tick(25)
             if self.state == "main menu":
                 for event in pygame.event.get():
-                    if event.type == pg.KEYDOWN and event.key == pg.K_UP:
-                        self.main_menu_sel += 1
-                        self.main_menu_sel %= 3
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_UP: # Move menu cursor up
+                            self.main_menu_sel -= 1
+                            self.main_menu_sel %= 3 # Wrap around if it's out of bounds
+                        elif event.key == pg.K_DOWN: # Move menu cursor down
+                            self.main_menu_sel += 1
+                            self.main_menu_sel %= 3
+                        elif event.key == pg.K_ESCAPE:
+                            self.main_menu_sel = 2
+                        elif event.key == pg.K_RETURN:
+                            if self.main_menu_sel == 0: # Start
+                                self.state = "targeting"
+                            elif self.main_menu_sel == 1: # Difficulty
+                                self.main_menu_difficulty += 1
+                                self.main_menu_difficulty %= 3
+                            elif self.main_menu_sel == 2:
+                                self.state = "quit menu"
+                                self.old_state = "main menu"
+                        elif event.key == pg.K_LEFT and self.main_menu_sel == 1 and self.main_menu_difficulty > 0:
+                            self.main_menu_difficulty -= 1
+                            self.redraw_main_menu()
+                        elif event.key == pg.K_RIGHT and self.main_menu_sel == 1 and self.main_menu_difficulty < 2:
+                            self.main_menu_difficulty += 1
+                            self.redraw_main_menu()
+                self.screen.blit(self.main_menu_image, (0, 0))
+                self.screen.blit(self.menu_select_marker, (10, self.menu_item_heights[self.main_menu_sel]))
+            elif self.state == "quit menu":
+                for event in pygame.event.get():
+                    if event.type == pg.KEYDOWN:
+                        if event.key in (pg.K_DOWN, pg.K_UP): # The menu has two items so pressing up or down works out to the same thing
+                            self.quit_menu_confirm = not self.quit_menu_confirm
+                        elif event.key == pg.K_RETURN:
+                            if self.quit_menu_confirm:
+                                self.running = False
+                            else:
+                                self.state = self.old_state
+                self.screen.blit(self.quit_menu_image, (0, 0))
+                self.screen.blit(self.menu_select_marker, (10, self.menu_item_heights[int(not self.quit_menu_confirm) + 1]))
 
             elif self.state == "targeting":
                 for event in pygame.event.get():
@@ -189,10 +236,10 @@ class PiratesGame:
 
                     self.screen.blit(self.copy_screen,(0,0))
                     self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
-                    pygame.display.flip()
 
                     if event.type == pygame.QUIT:
                         self.running = False
+            pygame.display.flip()
         pygame.quit()
 
 
