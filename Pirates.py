@@ -6,17 +6,35 @@ import random
 class PiratesGame:
     def __init__(self):
         pygame.init()
-
+        #Images--------------------------
         self.screen = pygame.display.set_mode((600, 600))#Creating a display creates a default surface: here we called it screen.(remember: 25px on sides, 20px between squares, 75px per square and half a square=37px 
         pygame.display.set_caption('Yarrrr!!')
-        self.screen.fill((90,50,5))
+
+        self.curs = pygame.sprite.Sprite()
+        self.curs.image = pygame.image.load("Cross hair.png").convert_alpha()
+        self.curs.rect = self.curs.image.get_rect()
+
+        self.box = pygame.sprite.Sprite()
+        self.box.image = pygame.image.load("box.png").convert_alpha()
+        self.box.rect = self.box.image.get_rect()
+
+        self.boardfile = pygame.sprite.Sprite()
+        self.boardfile.image = pygame.image.load("board.png").convert_alpha()
+        self.boardfile.rect = self.boardfile.image.get_rect()
+
+        self.parch = pygame.sprite.Sprite()
+        self.parch.image = pygame.image.load("parchment_75%.png").convert_alpha()
+        self.parch.rect = self.parch.image.get_rect()
+        
+        self.screen.blit(self.boardfile.image,(0,0))
         
         self.copy_screen=pygame.Surface.copy(self.screen)
-        
+        #Vars----------------------------
         self.x = 0
         self.y = 0
         self.x_rect = 0
         self.y_rect = 0
+        #Functions-----------------------
         def left(self):
             if self.x != 0:
                 self.x -= 1
@@ -42,7 +60,7 @@ class PiratesGame:
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
                 self.screen.fill((240,150,75),rect)
                 self.copy_screen=pygame.Surface.copy(self.screen)
-                
+        #Other---------------------------
         self.key_handlers = {
             pg.K_LEFT: left,
             pg.K_RIGHT: right,
@@ -102,20 +120,18 @@ class PiratesGame:
    #Drawing the board
         for x, x_pixels in self.x_box.items():
             for y, y_pixels in self.y_box.items():
-                rect=pygame.Rect(x_pixels,y_pixels,75,75)  #(x,y,width,height)
+                rect=pygame.Rect(x_pixels,y_pixels,75,75)#(x,y,width,height)
                 if self.board[x][y] == 0: # If the square is free, draw it blue
-                    self.screen.fill((20,70,130),rect)
+                    self.screen.blit(self.box.image,(x_pixels,y_pixels))
                 else: # Otherwise grey
                     c = pygame.Color(0, 0, 0)
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
                     self.screen.fill(c,rect)
+        self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
         pygame.display.flip()
         self.copy_screen=pygame.Surface.copy(self.screen)
         
-        curs = pygame.sprite.Sprite()
-        curs.image = pygame.image.load("Cross hair.png").convert_alpha()
-        curs.rect = curs.image.get_rect()
 
         while self.running:
             for user in pygame.event.get():
@@ -123,7 +139,7 @@ class PiratesGame:
                     self.key_handlers[user.key](self)
 
                 self.screen.blit(self.copy_screen,(0,0))
-                self.screen.blit(curs.image,(self.x_box[self.x],self.y_box[self.y]))
+                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
                 pygame.display.flip()
 
                 if user.type == pygame.QUIT:
