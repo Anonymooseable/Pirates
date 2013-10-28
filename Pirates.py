@@ -8,6 +8,8 @@ class PiratesGame:
         pygame.init()
         #Images--------------------------
         self.screen = pygame.display.set_mode((600, 600))#Creating a display creates a default surface: here we called it screen.(remember: 25px on sides, 20px between squares, 75px per square and half a square=37px 
+        self.board_image = pygame.Surface(self.screen.get_size())
+
         pygame.display.set_caption('Yarrrr!!')
 
         self.curs = pygame.sprite.Sprite()
@@ -26,9 +28,8 @@ class PiratesGame:
         self.parch.image = pygame.image.load("parchment_75%.png").convert_alpha()
         self.parch.rect = self.parch.image.get_rect()
 
-        self.screen.blit(self.boardfile.image,(0,0))
+        self.board_image.blit(self.boardfile.image,(0,0))
 
-        self.copy_screen=pygame.Surface.copy(self.screen)
         #Vars----------------------------
         self.x = 0
         self.y = 0
@@ -49,17 +50,18 @@ class PiratesGame:
                 self.y -= 1
         def escape(self):
             self.running = False
+            # Todo: make it change to pause menu state instead
         def fire(self):
             if self.board[self.x][self.y]==0:
-                self.screen.blit(self.copy_screen,(0,0))
+                self.screen.blit(self.board_image,(0,0))
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
                 self.screen.fill((90,170,190),rect)
-                self.copy_screen=pygame.Surface.copy(self.screen)
+                self.board_image=pygame.Surface.copy(self.screen)
             else:
-                self.screen.blit(self.copy_screen,(0,0))
+                self.screen.blit(self.board_image,(0,0))
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
                 self.screen.fill((240,150,75),rect)
-                self.copy_screen=pygame.Surface.copy(self.screen)
+                self.board_image=pygame.Surface.copy(self.screen)
         #Other---------------------------
         self.key_handlers = {
             pg.K_LEFT: left,
@@ -71,12 +73,12 @@ class PiratesGame:
         } # all commands
         self.x_box = {0:25,1:120,2:215,3:310,4:405,5:500}
         self.y_box = {0:25,1:120,2:215,3:310,4:405,5:500}
-        self.board = [[0 for y in range(6)] for x in range(6)]
+        self.board = [[-1 for y in range(6)] for x in range(6)]
 
         #Generating ship positions
         # Notes for board contents:
-        # 0 = Square free
-        # non-0 = Ship here
+        # -1 = Square free
+        # >= 0 = Ship here
         for ship_id, ship_length in enumerate([2, 3, 3, 4]):
             generated = False
             while not generated:
@@ -87,7 +89,7 @@ class PiratesGame:
                     generated = True # We'll be doing well until we fail (if we do)
                     for position_on_ship in range(0, ship_length): # position_on_ship = how far along the ship we are
                         x = ship_posx + position_on_ship # Determine x coordinate of the next square we want to set as part of the ship
-                        if self.board[x][ship_posy]!=0: # If we can't put our ship here
+                        if self.board[x][ship_posy] != -1: # If we can't put our ship here
                             generated = False # Then we failed.
                     if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
                         for position_on_ship in range(ship_length): # Same as before
@@ -100,19 +102,18 @@ class PiratesGame:
                     generated = True # We'll be doing well until we fail (if we do)
                     for position_on_ship in range(0, ship_length): # position_on_ship = how far along the ship we are
                         y = ship_posy + position_on_ship # Determine x coordinate of the next square we want to set as part of the ship
-                        if self.board[ship_posx][y]!=0: # If we can't put our ship here
+                        if self.board[ship_posx][y] != -1: # If we can't put our ship here
                             generated = False # Then we failed.
                     if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
                         for position_on_ship in range(ship_length): # Same as before
                             y = ship_posy + position_on_ship
                             self.board[ship_posx][y] = ship_id # We are now occupying the square!
 
-        self.board_image = pygame.Surface(self.screen.get_size())
         # Drawing the board
         for x, x_pixels in self.x_box.items():
             for y, y_pixels in self.y_box.items():
                 rect=pygame.Rect(x_pixels,y_pixels,75,75)#(x,y,width,height)
-                if self.board[x][y] == 0: # If the square is free, draw it blue
+                if self.board[x][y] == -1: # If the square is free, draw it blue
                     self.board_image.blit(self.box.image,(x_pixels,y_pixels))
                 else: # Otherwise grey
                     c = pygame.Color(0, 0, 0)
@@ -120,24 +121,64 @@ class PiratesGame:
                     c.hsva = (0, 0, value, 100)
                     self.board_image.fill(c,rect)
         self.board_image.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-        self.copy_screen=pygame.Surface.copy(self.screen)
+
+        # Set up main menu
+        self.main_menu_image = pygame.Surface(self.screen.get_size())
+        self.menu_item_heights = [50, 150, 250, 350, 450]
+        self.menu_font = pygame.font.Font("FortuneCookieNF.ttf", 48)
+        def menu_text(text):
+            return self.menu_font.render(text, True, (255, 255, 255))
+        self.menu_select_market = menu_text(">")
+
+        self.main_menu_start = menu_text("Start Game")
+        self.main_menu_easy = menu_text("Easy >")
+        self.main_menu_medium = menu_text("< Medium >")
+        self.main_menu_hard = menu_text("< Hard")
+        self.main_menu_quit = menu_text("Quit")
+        self.main_menu_sel = 0
+        self.main_menu_difficulty = 0 # 0 = easy, 1 = medium, 2 = hard
+
+        self.quit_menu_really = menu_text("Really quit?")
+        self.quit_menu_yes = menu_text("Yes")
+        self.quit_menu_no = menu_text("No")
 
         self.running = False
+        self.state = "targeting"
+
+    def redraw_main_menu(self):
+        self.main_menu_image.fill((0, 0, 0))
+        def center_horiz_pos(item):
+            return int(self.screen.get_width() / 2 - item.get_width() / 2)
+        self.main_menu_image.blit(self.main_menu_start, (center_horiz_pos(self.main_menu_start), self.menu_item_heights[0]))
+        if self.main_menu_difficulty == 0:
+            difficulty_image = self.main_menu_easy
+        elif self.main_menu_difficulty == 1:
+            difficulty_image = self.main_menu_medium
+        elif self.main_menu_difficulty == 2:
+            difficulty_image = self.main_menu_hard
+        self.main_menu_image.blit(difficulty_image, (center_horiz_pos(difficulty_image), self.menu_item_heights[1]))
+        self.main_menu_image.blit(self.main_menu_quit, (center_horiz_pos(self.main_menu_quit), self.menu_item_heights[2]))
 
     def run(self):
-
         self.running = True
         while self.running:
-            for user in pygame.event.get():
-                if user.type==pg.KEYDOWN and user.key in self.key_handlers:
-                    self.key_handlers[user.key](self)
+            if self.state == "main menu":
+                for event in pygame.event.get():
+                    if event.type == pg.KEYDOWN and event.key == pg.K_UP:
+                        self.main_menu_sel += 1
+                        self.main_menu_sel %= 3
 
-                self.screen.blit(self.copy_screen,(0,0))
-                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
-                pygame.display.flip()
+            elif self.state == "targeting":
+                for event in pygame.event.get():
+                    if event.type==pg.KEYDOWN and event.key in self.key_handlers:
+                        self.key_handlers[event.key](self)
 
-                if user.type == pygame.QUIT:
-                    self.running = False
+                    self.screen.blit(self.board_image,(0,0))
+                    self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
+                    pygame.display.flip()
+
+                    if event.type == pygame.QUIT:
+                        self.running = False
         pygame.quit()
 
 
