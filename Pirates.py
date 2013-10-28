@@ -6,8 +6,9 @@ import random
 class PiratesGame:
     def __init__(self):
         pygame.init()
+        self.clock=pygame.time.Clock()
         #Images--------------------------
-        self.screen = pygame.display.set_mode((600, 600))#Creating a display creates a default surface: here we called it screen.(remember: 25px on sides, 20px between squares, 75px per square and half a square=37px 
+        self.screen = pygame.display.set_mode((600, 600))#Creating a display creates a default surface: here we called it screen.(remember: 25px on sides, 20px between squares, 75px per square and half a square=37px
 
         pygame.display.set_caption('Yarrrr!!')
 
@@ -34,7 +35,6 @@ class PiratesGame:
         self.screen.blit(self.boardfile.image,(0,0))
         
         self.copy_screen=pygame.Surface.copy(self.screen)
-        self.ani_copy_screen=pygame.Surface.copy(self.screen)
         #Vars----------------------------
         self.x = 0
         self.y = 0
@@ -44,33 +44,46 @@ class PiratesGame:
         def left(self):
             if self.x != 0:
                 self.x -= 1
+                self.screen.blit(self.copy_screen,(0,0))
+                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def right(self):
             if self.x != 5:
                 self.x += 1
+                self.screen.blit(self.copy_screen,(0,0))
+                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def down(self):
             if self.y != 5:
                 self.y += 1
+                self.screen.blit(self.copy_screen,(0,0))
+                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def up(self):
             if self.y!=0:
                 self.y -= 1
+                self.screen.blit(self.copy_screen,(0,0))
+                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def escape(self):
             self.running = False
             # Todo: make it change to pause menu state instead
         def fire(self):
             if self.board[self.x][self.y]==-1:
-                self.screen.blit(self.copy_screen,(0,0))
                 for blarg in range(0,35):
+                    self.clock.tick(25)
                     rect=pygame.Rect(0+blarg*75,0,75,75)
-                    self.screen.blit(self.splash.image,(self.x_box[self.x],self.y_box[self.y]),rect)
-                    self.screen.blit(self.parch.image,(self.x_box[self.x],self.y_box[self.y]),rect,pg.BLEND_RGBA_MULT)
+                    self.copy_screen.blit(self.splash.image,(self.x_box[self.x],self.y_box[self.y]),rect)
+                    self.screen.blit(self.copy_screen,(0,0))
+                    self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
                     pygame.display.flip()
-                self.copy_screen=pygame.Surface.copy(self.screen)
             else:
                 self.screen.blit(self.copy_screen,(0,0))
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
                 self.screen.fill((240,150,75),rect)
-                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
                 self.copy_screen=pygame.Surface.copy(self.screen)
+                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+                
         #Other---------------------------
         self.key_handlers = {   # all commands
             pg.K_LEFT: left,
@@ -129,10 +142,9 @@ class PiratesGame:
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
                     self.screen.fill(c,rect)
-        self.copy_screen=pygame.Surface.copy(self.screen)#Blank copy of board without the multiply on it
+        self.copy_screen=pygame.Surface.copy(self.screen)
         self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
         pygame.display.flip()
-        self.copy_screen=pygame.Surface.copy(self.screen)
             
         # Set up main menu
         self.main_menu_image = pygame.Surface(self.screen.get_size())
@@ -173,9 +185,8 @@ class PiratesGame:
 
     def run(self):
         self.running = True
-        clock=pygame.time.Clock()
         while self.running:
-            clock.tick(25)
+            self.clock.tick(25)
             if self.state == "main menu":
                 for event in pygame.event.get():
                     if event.type == pg.KEYDOWN and event.key == pg.K_UP:
@@ -186,8 +197,6 @@ class PiratesGame:
                 for event in pygame.event.get():
                     if event.type==pg.KEYDOWN and event.key in self.key_handlers:
                         self.key_handlers[event.key](self)
-
-                    self.screen.blit(self.copy_screen,(0,0))
                     self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
                     pygame.display.flip()
 
