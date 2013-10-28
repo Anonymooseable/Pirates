@@ -25,9 +25,9 @@ class PiratesGame:
         self.parch = pygame.sprite.Sprite()
         self.parch.image = pygame.image.load("parchment_75%.png").convert_alpha()
         self.parch.rect = self.parch.image.get_rect()
-        
+
         self.screen.blit(self.boardfile.image,(0,0))
-        
+
         self.copy_screen=pygame.Surface.copy(self.screen)
         #Vars----------------------------
         self.x = 0
@@ -73,26 +73,15 @@ class PiratesGame:
         self.y_box = {0:25,1:120,2:215,3:310,4:405,5:500}
         self.board = [[0 for y in range(6)] for x in range(6)]
 
-        self.running = False
-
-    def run(self):
-
-        self.running = True
-        
-
-#Generating ship positions
-        generated=False
-        ship_posx=1
-        ship_posy=1
-        # Notes for ship generation:
+        #Generating ship positions
+        # Notes for board contents:
         # 0 = Square free
-        # 1 = Ship here
-        ships = ((1, 2), (2, 3), (3, 3), (4, 4)) # Make an ID and a length for 4 ships
-        for ship_id, ship_length in ships:
+        # non-0 = Ship here
+        for ship_id, ship_length in enumerate([2, 3, 3, 4]):
             generated = False
             while not generated:
                 x_or_y=random.choice(('horizontal','vertical'))
-                if x_or_y == 'horizontal': 
+                if x_or_y == 'horizontal':
                     ship_posx=random.randint(0,5-ship_length) # Subtract the length of the ship
                     ship_posy=random.randint(0,5)
                     generated = True # We'll be doing well until we fail (if we do)
@@ -117,22 +106,27 @@ class PiratesGame:
                         for position_on_ship in range(ship_length): # Same as before
                             y = ship_posy + position_on_ship
                             self.board[ship_posx][y] = ship_id # We are now occupying the square!
-   #Drawing the board
+
+        self.board_image = pygame.Surface(self.screen.get_size())
+        # Drawing the board
         for x, x_pixels in self.x_box.items():
             for y, y_pixels in self.y_box.items():
                 rect=pygame.Rect(x_pixels,y_pixels,75,75)#(x,y,width,height)
                 if self.board[x][y] == 0: # If the square is free, draw it blue
-                    self.screen.blit(self.box.image,(x_pixels,y_pixels))
+                    self.board_image.blit(self.box.image,(x_pixels,y_pixels))
                 else: # Otherwise grey
                     c = pygame.Color(0, 0, 0)
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
-                    self.screen.fill(c,rect)
-        self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-        pygame.display.flip()
+                    self.board_image.fill(c,rect)
+        self.board_image.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
         self.copy_screen=pygame.Surface.copy(self.screen)
-        
 
+        self.running = False
+
+    def run(self):
+
+        self.running = True
         while self.running:
             for user in pygame.event.get():
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
