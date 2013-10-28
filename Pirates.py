@@ -25,10 +25,15 @@ class PiratesGame:
         self.parch = pygame.sprite.Sprite()
         self.parch.image = pygame.image.load("parchment_75%.png").convert_alpha()
         self.parch.rect = self.parch.image.get_rect()
+
+        self.splash = pygame.sprite.Sprite()
+        self.splash.image = pygame.image.load("splash.png").convert_alpha()
+        self.splash.rect = self.splash.image.get_rect()
         
         self.screen.blit(self.boardfile.image,(0,0))
         
         self.copy_screen=pygame.Surface.copy(self.screen)
+        self.ani_copy_screen=pygame.Surface.copy(self.screen)
         #Vars----------------------------
         self.x = 0
         self.y = 0
@@ -52,13 +57,17 @@ class PiratesGame:
         def fire(self):
             if self.board[self.x][self.y]==0:
                 self.screen.blit(self.copy_screen,(0,0))
-                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
-                self.screen.fill((90,170,190),rect)
+                for blarg in range(0,35):
+                    rect=pygame.Rect(0+blarg*75,0,75,75)
+                    self.screen.blit(self.splash.image,(self.x_box[self.x],self.y_box[self.y]),rect)
+                    self.screen.blit(self.parch.image,(self.x_box[self.x],self.y_box[self.y]),rect,pg.BLEND_RGBA_MULT)
+                    pygame.display.flip()
                 self.copy_screen=pygame.Surface.copy(self.screen)
             else:
                 self.screen.blit(self.copy_screen,(0,0))
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
                 self.screen.fill((240,150,75),rect)
+                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
                 self.copy_screen=pygame.Surface.copy(self.screen)
         #Other---------------------------
         self.key_handlers = {
@@ -128,12 +137,14 @@ class PiratesGame:
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
                     self.screen.fill(c,rect)
+        self.copy_screen=pygame.Surface.copy(self.screen)#Blank copy of board without the multiply on it
         self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
         pygame.display.flip()
         self.copy_screen=pygame.Surface.copy(self.screen)
         
-
+        clock=pygame.time.Clock()
         while self.running:
+            clock.tick(25)
             for user in pygame.event.get():
                 if user.type==pg.KEYDOWN and user.key in self.key_handlers:
                     self.key_handlers[user.key](self)
