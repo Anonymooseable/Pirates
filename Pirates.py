@@ -12,29 +12,18 @@ class PiratesGame:
 
         pygame.display.set_caption('Yarrrr!!')
 
-        self.curs = pygame.sprite.Sprite()
-        self.curs.image = pygame.image.load("Cross hair.png").convert_alpha()
-        self.curs.rect = self.curs.image.get_rect()
+        self.cursor = pygame.image.load("Cross hair.png").convert_alpha()
 
-        self.box = pygame.sprite.Sprite()
-        self.box.image = pygame.image.load("box.png").convert_alpha()
-        self.box.rect = self.box.image.get_rect()
+        self.box_image = pygame.image.load("box.png").convert_alpha()
 
-        self.boardfile = pygame.sprite.Sprite()
-        self.boardfile.image = pygame.image.load("board.png").convert_alpha()
-        self.boardfile.rect = self.boardfile.image.get_rect()
+        self.board_background_image = pygame.image.load("board.png").convert_alpha()
 
-        self.parch = pygame.sprite.Sprite()
-        self.parch.image = pygame.image.load("parchment_75%.png").convert_alpha()
-        self.parch.rect = self.parch.image.get_rect()
+        self.parch = pygame.image.load("parchment_75%.png").convert_alpha()
 
-        self.splash = pygame.sprite.Sprite()
-        self.splash.image = pygame.image.load("splash.png").convert_alpha()
-        self.splash.rect = self.splash.image.get_rect()
+        self.splash = pygame.image.load("splash.png").convert_alpha()
 
-        self.screen.blit(self.boardfile.image,(0,0))
+        self.board_image = pygame.Surface(self.screen.get_size()).convert_alpha()
 
-        self.copy_screen=pygame.Surface.copy(self.screen)
         #Vars----------------------------
         self.x = 0
         self.y = 0
@@ -44,45 +33,32 @@ class PiratesGame:
         def left(self):
             if self.x != 0:
                 self.x -= 1
-                self.screen.blit(self.copy_screen,(0,0))
-                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def right(self):
             if self.x != 5:
                 self.x += 1
-                self.screen.blit(self.copy_screen,(0,0))
-                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def down(self):
             if self.y != 5:
                 self.y += 1
-                self.screen.blit(self.copy_screen,(0,0))
-                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def up(self):
             if self.y!=0:
                 self.y -= 1
-                self.screen.blit(self.copy_screen,(0,0))
-                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-                self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
         def escape(self):
-            self.running = False
-            # Todo: make it change to pause menu state instead
+            self.state = "quit menu"
+            self.old_state = "targeting"
+
         def fire(self):
-            if self.board[self.x][self.y]==-1:
-                for blarg in range(0,35):
-                    self.clock.tick(25)
-                    rect=pygame.Rect(0+blarg*75,0,75,75)
-                    self.copy_screen.blit(self.splash.image,(self.x_box[self.x],self.y_box[self.y]),rect)
-                    self.screen.blit(self.copy_screen,(0,0))
-                    self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+            if self.board[self.x][self.y]==-1: # Empty square targeted: play splash animation
+                for frame in range(0,35): # Animation has 35 frames
+                    self.clock.tick(25) # Delay to ensure 25 FPS
+                    rect=pygame.Rect(0+frame*75,0,75,75) # Region of the splash spritesheet to draw
+                    self.screen.blit(self.board_image, (0, 0))
+                    self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect)
+                    self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
                     pygame.display.flip()
-            else:
-                self.screen.blit(self.copy_screen,(0,0))
-                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75)
-                self.screen.fill((240,150,75),rect)
-                self.copy_screen=pygame.Surface.copy(self.screen)
-                self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
+            else: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
+                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
+                self.board_image.blit(self.board_background_image, (0,0))
+                self.board_image.fill((240,150,75),rect) # Put orange on the board
 
         #Other---------------------------
         self.key_handlers = {   # all commands
@@ -93,17 +69,17 @@ class PiratesGame:
             pg.K_ESCAPE: escape,
             pg.K_RETURN: fire
         }
-        self.x_box = {0:25,1:120,2:215,3:310,4:405,5:500}
-        self.y_box = {0:25,1:120,2:215,3:310,4:405,5:500}
-        self.board = [[-1 for y in range(6)] for x in range(6)]
+        self.x_box = [25,120,215,310,405,500] # Distance of the left border of each box from the left of the screen
+        self.y_box = [25,120,215,310,405,500] # Distance of the top border of each box from the top of the screen
+        self.board = [[-1 for y in range(6)] for x in range(6)] # Create a 6x6 board filled with -1s
 
         #Generating ship positions
         # Notes for board contents:
         # -1 = Square free
         # >= 0 = Ship here
-        for ship_id, ship_length in enumerate([2, 3, 3, 4]):
+        for ship_id, ship_length in enumerate([2, 3, 3, 4]): # For each ship
             generated = False
-            while not generated:
+            while not generated: # Attempt to place the ship until we are successful
                 x_or_y=random.choice(('horizontal','vertical'))
                 if x_or_y == 'horizontal':
                     ship_posx=random.randint(0,5-ship_length) # Subtract the length of the ship
@@ -132,20 +108,17 @@ class PiratesGame:
                             self.board[ship_posx][y] = ship_id # We are now occupying the square!
 
         # Drawing the board
-        for x, x_pixels in self.x_box.items():
-            for y, y_pixels in self.y_box.items():
+        self.board_image.blit(self.board_background_image, (0, 0)) # First put in the background
+        for x, x_pixels in enumerate(self.x_box):
+            for y, y_pixels in enumerate(self.y_box):
                 rect=pygame.Rect(x_pixels,y_pixels,75,75)#(x,y,width,height)
                 if self.board[x][y] == -1: # If the square is free, draw it blue
-                    self.screen.blit(self.box.image,(x_pixels,y_pixels))
-                else: # Otherwise grey
+                    self.board_image.blit(self.box_image,(x_pixels,y_pixels))
+                else: # Otherwise some shade of grey depending on which ship is there
                     c = pygame.Color(0, 0, 0)
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
-                    self.screen.fill(c,rect)
-        self.copy_screen=pygame.Surface.copy(self.screen)
-        self.screen.blit(self.parch.image,(0,0),None,pg.BLEND_RGBA_MULT)
-        pygame.display.flip()
-        self.copy_screen=pygame.Surface.copy(self.screen)
+                    self.board_image.fill(c,rect)
 
         # Set up main menu
         self.menu_item_heights = [50, 150, 250, 350, 450]
@@ -245,10 +218,13 @@ class PiratesGame:
                 for event in pygame.event.get():
                     if event.type==pg.KEYDOWN and event.key in self.key_handlers:
                         self.key_handlers[event.key](self)
-                    self.screen.blit(self.curs.image,(self.x_box[self.x],self.y_box[self.y]))
 
                     if event.type == pygame.QUIT:
                         self.running = False
+                self.screen.blit(self.board_image,(0,0))
+                self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
+                self.screen.blit(self.cursor,(self.x_box[self.x],self.y_box[self.y]))
+
             pygame.display.flip()
         pygame.quit()
 
