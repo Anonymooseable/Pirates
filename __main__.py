@@ -23,8 +23,8 @@ Runs a battleships game.
 		super().__init__()
 		self.pygame_poller = PygamePoller().register(self)
 		self.draw_manager = DrawManager().register(self)
-		self.grid = Grid(width = 20, height = 20).register(self)
-		self.state_queue = [AIPlacingShipsState(), TargetingState()]
+		self.grid = Grid(width = 7, height = 7).register(self)
+		self.state_queue = [AIPlacingShipsState(ship_lengths=[2, 3, 4, 4, 5]), TargetingState()]
 		self.next_state()
 		self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)
 

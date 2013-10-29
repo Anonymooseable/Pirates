@@ -50,7 +50,7 @@ class Grid (Drawable):
 		self.ships = []
 		self.ships_live = []
 		self.border_size = 25 # Size of border from edge of window
-		self.square_size = 15 # Size of each square
+		self.square_size = 40 # Size of each square
 		self.square_margin = 5 # Size of inter-square border
 		self.all_visible = True
 		# (status, ship)
