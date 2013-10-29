@@ -48,7 +48,7 @@ class PiratesGame:
 
         def fire(self):
             if self.board[self.x][self.y]==-1: # Empty square targeted: play splash animation
-                for frame in range(0,35): # Animation has 35 frames
+                for frame in range(0,35): # Animation has 35 frames (frame 0 to frame 34)
                     self.clock.tick(25) # Delay to ensure 25 FPS
                     rect=pygame.Rect(0+frame*75,0,75,75) # Region of the splash spritesheet to draw
                     self.screen.blit(self.board_image, (0, 0))
@@ -57,7 +57,6 @@ class PiratesGame:
                     pygame.display.flip()
             else: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
-                self.board_image.blit(self.board_background_image, (0,0))
                 self.board_image.fill((240,150,75),rect) # Put orange on the board
 
         #Other---------------------------
@@ -150,6 +149,7 @@ class PiratesGame:
     def redraw_main_menu(self):
         self.main_menu_image.fill((0, 0, 0))
         self.main_menu_image.blit(self.board_background_image, (0,0))
+        self.main_menu_image.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
         def center_horiz_pos(item):
             return int(self.screen.get_width() / 2 - item.get_width() / 2)
         self.main_menu_image.blit(self.main_menu_start, (center_horiz_pos(self.main_menu_start), self.menu_item_heights[0]))
