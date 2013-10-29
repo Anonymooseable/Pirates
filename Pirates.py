@@ -164,6 +164,7 @@ class PiratesGame:
 
     def draw_quit_menu(self):
         self.quit_menu_image.fill((0, 0, 0))
+        self.quit_menu_image.blit(self.background_image, (0,0))
         def center_horiz_pos(item):
             return int(self.screen.get_width() / 2 - item.get_width() / 2)
         self.quit_menu_image.blit(self.quit_menu_really, (center_horiz_pos(self.quit_menu_really), self.menu_item_heights[0]))
