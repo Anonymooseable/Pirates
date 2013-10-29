@@ -149,6 +149,7 @@ class PiratesGame:
 
     def redraw_main_menu(self):
         self.main_menu_image.fill((0, 0, 0))
+        self.main_menu_image.blit(self.board_background_image, (0,0))
         def center_horiz_pos(item):
             return int(self.screen.get_width() / 2 - item.get_width() / 2)
         self.main_menu_image.blit(self.main_menu_start, (center_horiz_pos(self.main_menu_start), self.menu_item_heights[0]))
