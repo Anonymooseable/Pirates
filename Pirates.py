@@ -59,6 +59,7 @@ class PiratesGame:
 
         def fire(self): # Fire at a square
             if self.board[self.x][self.y]==-1: # Empty square targeted: play splash animation
+                self.board[self.x][self.y] = -2 # Denotes that it's been targeted already
                 for frame in range(0,35): # Animation has 35 frames (frame 0 to frame 34)
                     self.clock.tick(25) # Delay to ensure 25 FPS
                     rect=pygame.Rect(0+frame*75,0,75,75) # Region of the splash spritesheet to draw
@@ -66,14 +67,24 @@ class PiratesGame:
                     self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect) # Draw the animation frame
                     self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Draw the parchment on top
                     pygame.display.flip() # And flip the screen
-            else: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
+            elif self.board[self.x][self.y] < 20: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
                 self.board_surface.fill((240,150,75),rect) # Put orange on the board
+                self.board[self.x][self.y] += 20 # Mark this square as damaged
+
+                player_won = True # And now check if the player finished
+                for row in self.board:
+                    for square in row:
+                        if 0 <= square < 20: # If it's a square that hasn't been hit yet
+                            player_won = False
+                if player_won:
+                    self.state = "player won"
+                    return # To avoid the state then getting set to player lost, break out of the function
+            # Otherwise, there's an already damaged ship here (>= 20) or a previously targeted empty square (-2): do nothing
+            # In any case, reduce the number of shots and set the state to player lost if we're all out
             self.shots_remaining -= 1
             if self.shots_remaining <= 0:
-                pass
-                # TODO: Implement "game over"
-            # TODO: Check if all ships have been sunk and if yes also game over
+                self.state = "player lost"
 
         #Other---------------------------
         self.key_handlers = {   # all in-game commands
@@ -105,6 +116,7 @@ class PiratesGame:
         self.main_menu_quit = menu_text("Quit")
         self.main_menu_sel = 0 # Position of the cursor in the main menu
         self.main_menu_difficulty = 0 # 0 = easy, 1 = medium, 2 = hard
+        self.difficulties = [25, 20, 15] # 30 shots in easy, etc; allows for 13, 8, and 3 misses respectively
 
         self.pause_menu_image = pygame.Surface(self.screen.get_size()) # Surface containing the rendered quit menu
         self.pause_menu_title = menu_text("-PAUSED-")
@@ -154,7 +166,8 @@ class PiratesGame:
         #Generating ship positions
         # Notes for board contents:
         # -1 = Square free
-        # >= 0 = Ship here
+        # >= 0 but < 20 = Ship here
+        # > 20 = ship, but has been hit
         for ship_id, ship_length in enumerate([2, 3, 3, 4]): # For each ship
             generated = False
             while not generated: # Attempt to place the ship until we are successful
@@ -217,6 +230,7 @@ class PiratesGame:
                             if self.main_menu_sel == 0: # Start: set the state to targeting
                                 self.generate_ships()
                                 self.state = "targeting"
+                                self.shots_remaining = self.difficulties[self.main_menu_difficulty]
                             elif self.main_menu_sel == 2:
                                 self.running = False
                         # Increase/Decrease the difficulty if the cursor is on the second menu item (difficulty) and it's not already at the minimum/maximum
@@ -261,6 +275,14 @@ class PiratesGame:
                 self.screen.blit(self.board_surface,(0,0))
                 self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
                 self.screen.blit(self.cursor,(self.x_box[self.x],self.y_box[self.y]))
+
+            else: # State isn't implemented! Let's draw a big red X
+                self.screen.fill((0, 0, 0))
+                pygame.draw.line(self.screen, (255, 0, 0), (0, 0), (600, 600), 3)
+                pygame.draw.line(self.screen, (255, 0, 0), (600, 0), (0, 600), 3)
+                for event in pygame.event.get():
+                    if event.type == pg.QUIT or event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                        self.running = False
 
             pygame.display.flip()
         pygame.quit()
