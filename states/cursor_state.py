@@ -60,6 +60,7 @@ the cursor. """
 		self.keydown_handler(pg.K_RIGHT) (CursorModifier(_right, _left))
 		self.keydown_handler(pg.K_UP) (CursorModifier(_up, _down))
 		self.keydown_handler(pg.K_DOWN) (CursorModifier(_down, _up))
+		self.keydown_handler(pg.K_RETURN) (self.complete)
 
 	def cursor_ok(self):
 		"""
@@ -98,5 +99,5 @@ pixels of the centre of the square at the coordinates (cursor_x, cursor_y)."""
 	def _on_mouse_down(self, pgevent):
 		self.complete()
 
-	def complete(self):
+	def complete(self, *args):
 		pass

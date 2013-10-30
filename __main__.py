@@ -4,14 +4,12 @@ import circuits
 from circuits.core.handlers import handler
 
 import pygame
-import pygame as pg
 
 from grid import Grid
-from ship import Ship
-from states.place_all_ships import PlaceAllShipsState
+#from states.place_all_ships import PlaceAllShipsState
 from states.ai_place import AIPlacingShipsState
 from states.target_ships import TargetingState
-from events import Update, KeyDown, KeyUp, KeyHandler, Quit, PygamePoller
+from events import KeyHandler, Quit, PygamePoller, Update
 from draw import DrawManager, Draw
 
 class PiratesGame (KeyHandler):
@@ -28,7 +26,7 @@ Runs a battleships game.
 		self.next_state()
 		self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)
 
-		@self.keydown_handler(pg.K_ESCAPE)
+		@self.keydown_handler(pygame.K_ESCAPE)
 		def escape_pressed(self):
 			self.fire(Quit())
 

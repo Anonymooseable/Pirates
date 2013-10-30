@@ -51,5 +51,5 @@ when all the ships have been sunk.
 			self.root.state_queue.append(GameOverState("", self.attempts))
 			self.unregister()
 
-	def complete(self):
+	def complete(self, *args):
 		self.fire(SquareAttacked(self.cursor))

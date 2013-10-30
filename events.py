@@ -56,24 +56,24 @@ class SomeHandler (KeyHandler):
 		self.keyup_handlers = {}
 
 	def keydown_handler(self, key):
-		def register(f):
-			self.keydown_handlers[key] = f
-			return f
+		def register(fun):
+			self.keydown_handlers[key] = fun
+			return fun
 		return register
 
 	def keyup_handler(self, key):
-		def register(f):
-			self.keyup_handlers[key] = f
-			return f
+		def register(fun):
+			self.keyup_handlers[key] = fun
+			return fun
 		return register
 
 	@handler("key_down")
-	def _on_key_down(self, event, pygame_event):
+	def _on_key_down(self, pygame_event):
 		if pygame_event.key in self.keydown_handlers:
 			self.keydown_handlers[pygame_event.key](self)
 
 	@handler("key_up")
-	def _on_key_up(self, event, pygame_event):
+	def _on_key_up(self, pygame_event):
 		if pygame_event.key in self.keyup_handlers:
 			self.keyup_handlers[pygame_event.key](self)
 

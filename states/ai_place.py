@@ -29,3 +29,7 @@ Creates an AIPlacingShipsState. Accepts lengths, a list of integer ship lengths 
 					generated = new_ship.position_ok()
 				yield self.call(ShipPlaced(new_ship))
 			self.unregister()
+
+	draw_channel = 99
+	def draw(self, surface):
+		surface.fill((0, 0, 0))

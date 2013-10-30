@@ -18,7 +18,7 @@ class GameOverState (State):
 	@handler("registered")
 	def _on_registered(self, component, manager):
 		if component == self:
-			self.font = pygame.font.Font("economica.ttf", 64)
+			self.font = pygame.font.Font("economica.ttf", 48)
 			screen_size = Vector2(self.root.screen.get_size())
 			winner_text = self.font.render("You win!", True, text_colour)
 			attempts_text = self.font.render("You took %d shots." % self.attempts, True, text_colour)
