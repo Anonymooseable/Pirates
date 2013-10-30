@@ -66,6 +66,7 @@ class PiratesGame:
                     self.screen.blit(self.board_surface, (0, 0)) # Draw the normal background image
                     self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect) # Draw the animation frame
                     self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Draw the parchment on top
+                    self.shots()#Run the func that draws the shots remaining
                     pygame.display.flip() # And flip the screen
             elif self.board[self.x][self.y] < 20: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
                 rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
