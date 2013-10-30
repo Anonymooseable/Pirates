@@ -58,7 +58,7 @@ class PiratesGame:
             self.old_state = "targeting"
 
         def fire(self): # Fire at a square
-            if self.board[self.x][self.y]==-1: # Empty square targeted: play splash animation
+            if self.board[self.x][self.y] in (-1,-2): # Empty square targeted: play splash animation
                 self.board[self.x][self.y] = -2 # Denotes that it's been targeted already
                 for frame in range(0,35): # Animation has 35 frames (frame 0 to frame 34)
                     self.clock.tick(25) # Delay to ensure 25 FPS
@@ -129,7 +129,7 @@ class PiratesGame:
         self.state = "main menu"
         self.redraw_main_menu() # Render the menus
         self.draw_pause_menu()
-
+#------------------------------------------------------------------------------------------------------def __init__ ends here
     def redraw_main_menu(self): # Function for drawing the main menu
         self.main_menu_image.fill((0, 0, 0))
         self.main_menu_image.blit(self.background, (0,0)) # Put in the background
@@ -160,7 +160,7 @@ class PiratesGame:
         self.pause_menu_image.blit(self.pause_menu_main, (center_horiz_pos(self.pause_menu_main), self.menu_item_heights[2]))
         self.pause_menu_image.blit(self.pause_menu_exit, (center_horiz_pos(self.pause_menu_exit), self.menu_item_heights[3]))
 
-    def generate_ships(self):
+    def generate_ships(self):  #this actually generates the ship and draws the board
         self.board = [[-1 for y in range(6)] for x in range(6)] # Create a 6x6 board filled with -1s
 
         #Generating ship positions
@@ -172,7 +172,7 @@ class PiratesGame:
             generated = False
             while not generated: # Attempt to place the ship until we are successful
                 x_or_y=random.choice(('horizontal','vertical'))
-                if x_or_y == 'horizontal':
+                if x_or_y == 'horizontal':                  #code for generating horizontal ships
                     ship_posx=random.randint(0,5-ship_length) # Subtract the length of the ship
                     ship_posy=random.randint(0,5)
                     generated = True # We'll be doing well until we fail (if we do)
@@ -185,7 +185,7 @@ class PiratesGame:
                             x = ship_posx + position_on_ship
                             self.board[x][ship_posy] = ship_id # We are now occupying the square!
 
-                else:
+                else:                           #code for generating vertical ships
                     ship_posx=random.randint(0,5)
                     ship_posy=random.randint(0,5-ship_length) # Subtract the length of the ship
                     generated = True # We'll be doing well until we fail (if we do)
@@ -210,7 +210,8 @@ class PiratesGame:
                     value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
                     c.hsva = (0, 0, value, 100)
                     self.board_surface.fill(c,rect)
-
+#-------------------------------------------------------------------------------------------------------------------------def generate_ships ends here
+           #-----------This is the core running functions that calls all the other functions (except the generation code)-----------#
     def run(self):
         self.running = True
         while self.running: # While the user hasn't confirmed that they want to quit
