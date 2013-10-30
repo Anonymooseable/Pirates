@@ -79,12 +79,14 @@ class PiratesGame:
                             player_won = False
                 if player_won:
                     self.state = "player won"
+                    self.exit_screen_draw = True    #Draw the screen the first time you end a game
                     return # To avoid the state then getting set to player lost, break out of the function
             # Otherwise, there's an already damaged ship here (>= 20) or a previously targeted empty square (-2): do nothing
             # In any case, reduce the number of shots and set the state to player lost if we're all out
             self.shots_remaining -= 1
             if self.shots_remaining <= 0:
                 self.state = "player lost"
+                self.exit_screen_draw = True    #Draw the screen the first time you end a game
 
         #Other---------------------------
         self.key_handlers = {   # all in-game commands
@@ -98,38 +100,62 @@ class PiratesGame:
         self.x_box = [25,120,215,310,405,500] # Distance of the left border of each box from the left of the screen
         self.y_box = [25,120,215,310,405,500] # Distance of the top border of each box from the top of the screen
 
-        # Set up main menu
-        self.menu_item_heights = [50, 150, 250, 350, 450] # Distance from top of screen of each menu item
-        self.menu_font = pygame.font.Font("FortuneCookieNF.ttf", 48)
+        # Setting up all text and fonts
+        self.menu_item_heights = [60, 180, 270, 360, 450] # Distance from top of screen of each menu item
+        self.title_font = pygame.font.Font("Jean Lafitte.ttf", 50)
+        self.menu_font = pygame.font.Font("Primitive.ttf", 45)
+        self.shots_font = pygame.font.Font("Primitive.ttf", 25)
+        def menu_title_text(text): # Function for rendering a menu item (to avoid copying True, (255, 255, 255) each time)
+            return self.title_font.render(text, True, (255, 255, 255))
+        self.main_menu_title = menu_title_text("AHOY")
+        self.pause_menu_title = menu_title_text("PAUSED")
+        self.end_fail = menu_title_text("YER GOIN")
+        self.end_fail_xtra = menu_title_text("DOWN")
+        self.end_fail_xtra_xtra = menu_title_text("IN BUBBLES")
+        self.end_win = menu_title_text("PLUNDERED")
         def menu_text(text): # Function for rendering a menu item (to avoid copying True, (255, 255, 255) each time)
             return self.menu_font.render(text, True, (255, 255, 255))
         self.menu_select_marker = menu_text(">") # Marker for showing which item is currently selected
 
         self.main_menu_image = pygame.Surface(self.screen.get_size()) # Surface containing the rendered main menu
-        self.main_menu_start = menu_text("Start Game")
+        self.main_menu_start = menu_text("Load the canons!")
 
         # Difficulty menu item
-        self.main_menu_easy = menu_text("Easy >")
-        self.main_menu_medium = menu_text("< Medium >")
-        self.main_menu_hard = menu_text("< Hard")
+        self.main_menu_easy = menu_text("Pansy >")
+        self.main_menu_medium = menu_text("< Buff >")
+        self.main_menu_hard = menu_text("< Cutthroat")
 
-        self.main_menu_quit = menu_text("Quit")
+        self.main_menu_quit = menu_text("Flee")
         self.main_menu_sel = 0 # Position of the cursor in the main menu
         self.main_menu_difficulty = 0 # 0 = easy, 1 = medium, 2 = hard
         self.difficulties = [25, 20, 15] # 30 shots in easy, etc; allows for 13, 8, and 3 misses respectively
 
         self.pause_menu_image = pygame.Surface(self.screen.get_size()) # Surface containing the rendered quit menu
-        self.pause_menu_title = menu_text("-PAUSED-")
-        self.pause_menu_resume = menu_text("Resume")
-        self.pause_menu_main = menu_text("Main menu")
-        self.pause_menu_exit = menu_text("Exit")
+        self.pause_menu_resume = menu_text("Back to the fight!")
+        self.pause_menu_main = menu_text("Come about again")
+        self.pause_menu_exit = menu_text("Flee")
         self.pause_menu_sel = 0 # Position of the cursor in the pause menu
 
+        self.end_screen = pygame.Surface(self.screen.get_size()) # Surface containing the rendered end menu
+        self.end_retry = menu_text("Come about again!")
+        self.end_exit_win = menu_text("Grab yer Booty")
+        self.end_exit_win_xtra = menu_text("and run!")
+        self.end_exit_fail = menu_text("Surrender")
+        self.end_screen_sel = 0 # Position of the cursor in the end menu
+        
         self.running = False
         self.state = "main menu"
         self.redraw_main_menu() # Render the menus
         self.draw_pause_menu()
-#------------------------------------------------------------------------------------------------------def __init__ ends here
+#------------------------------------------------------------------------------------------------------def __init__ ends here        
+            #------------------------Drawing and generation functions---------------------#
+
+    def shots(self): #Func that draws the shots remaining
+        def shots_text(text): 
+            return self.shots_font.render(text, True, (255, 255, 255))
+        shots_drawn = shots_text(str(self.shots_remaining))
+        self.screen.blit(shots_drawn,(10,10))
+        
     def redraw_main_menu(self): # Function for drawing the main menu
         self.main_menu_image.fill((0, 0, 0))
         self.main_menu_image.blit(self.background, (0,0)) # Put in the background
@@ -139,15 +165,16 @@ class PiratesGame:
             return int(self.screen.get_width() / 2 - item.get_width() / 2)
 
         # Draw each menu item
-        self.main_menu_image.blit(self.main_menu_start, (center_horiz_pos(self.main_menu_start), self.menu_item_heights[0]))
+        self.main_menu_image.blit(self.main_menu_title, (center_horiz_pos(self.main_menu_title), self.menu_item_heights[0]))
+        self.main_menu_image.blit(self.main_menu_start, (center_horiz_pos(self.main_menu_start), self.menu_item_heights[1]))
         if self.main_menu_difficulty == 0:
             difficulty_image = self.main_menu_easy
         elif self.main_menu_difficulty == 1:
             difficulty_image = self.main_menu_medium
         elif self.main_menu_difficulty == 2:
             difficulty_image = self.main_menu_hard
-        self.main_menu_image.blit(difficulty_image, (center_horiz_pos(difficulty_image), self.menu_item_heights[1]))
-        self.main_menu_image.blit(self.main_menu_quit, (center_horiz_pos(self.main_menu_quit), self.menu_item_heights[2]))
+        self.main_menu_image.blit(difficulty_image, (center_horiz_pos(difficulty_image), self.menu_item_heights[2]))
+        self.main_menu_image.blit(self.main_menu_quit, (center_horiz_pos(self.main_menu_quit), self.menu_item_heights[3]))
 
     def draw_pause_menu(self): # Function for drawing the quit menu (similar to main menu drawing function)
         self.pause_menu_image.fill((0, 0, 0))
@@ -159,7 +186,25 @@ class PiratesGame:
         self.pause_menu_image.blit(self.pause_menu_resume, (center_horiz_pos(self.pause_menu_resume), self.menu_item_heights[1]))
         self.pause_menu_image.blit(self.pause_menu_main, (center_horiz_pos(self.pause_menu_main), self.menu_item_heights[2]))
         self.pause_menu_image.blit(self.pause_menu_exit, (center_horiz_pos(self.pause_menu_exit), self.menu_item_heights[3]))
-
+        
+    def draw_end_screen(self): # Function for drawing the end screen menu (similar to main menu drawing function)
+        self.end_screen.fill((0, 0, 0))
+        self.end_screen.blit(self.background, (0,0))
+        self.end_screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
+        def center_horiz_pos(item):
+            return int(self.screen.get_width() / 2 - item.get_width() / 2)
+        if self.state == "player won":
+            self.end_screen.blit(self.end_win, (center_horiz_pos(self.end_win), self.menu_item_heights[0]))
+            self.end_screen.blit(self.end_exit_win, (center_horiz_pos(self.end_exit_win), self.menu_item_heights[2]))
+            self.end_screen.blit(self.end_exit_win_xtra, (center_horiz_pos(self.end_exit_win_xtra), self.menu_item_heights[2]+55))
+            self.end_screen.blit(self.end_retry, (center_horiz_pos(self.end_retry), self.menu_item_heights[1]))
+        if self.state == "player lost":
+            self.end_screen.blit(self.end_fail, (center_horiz_pos(self.end_fail), self.menu_item_heights[0]))
+            self.end_screen.blit(self.end_fail_xtra, (center_horiz_pos(self.end_fail_xtra), self.menu_item_heights[0]+60))
+            self.end_screen.blit(self.end_fail_xtra_xtra, (center_horiz_pos(self.end_fail_xtra_xtra), self.menu_item_heights[0]+120))
+            self.end_screen.blit(self.end_exit_fail, (center_horiz_pos(self.end_exit_fail), self.menu_item_heights[3]))
+            self.end_screen.blit(self.end_retry, (center_horiz_pos(self.end_retry), self.menu_item_heights[2]))
+        
     def generate_ships(self):  #this actually generates the ship and draws the board
         self.board = [[-1 for y in range(6)] for x in range(6)] # Create a 6x6 board filled with -1s
 
@@ -218,6 +263,8 @@ class PiratesGame:
             self.clock.tick(25)
             if self.state == "main menu":
                 for event in pygame.event.get(): # Handle events
+                    if event.type == pygame.QUIT: #click on the x
+                        self.running = False
                     if event.type == pg.KEYDOWN: # A key pas pressed
                         if event.key == pg.K_UP: # The key was the up key
                             self.main_menu_sel -= 1 # Move the cursor up in the menu
@@ -244,10 +291,12 @@ class PiratesGame:
                 # After handling events, draw the menu to the screen
                 self.screen.blit(self.main_menu_image, (0, 0))
                 # And the marker
-                self.screen.blit(self.menu_select_marker, (10, self.menu_item_heights[self.main_menu_sel]))
+                self.screen.blit(self.menu_select_marker, (10, self.menu_item_heights[self.main_menu_sel+1]))
 
             elif self.state == "pause menu": # Mostly like the main menu, just simpler
                 for event in pygame.event.get():
+                    if event.type == pygame.QUIT: #click on the x
+                        self.running = False
                     if event.type == pg.KEYDOWN:
                         if event.key == pg.K_UP:
                             self.pause_menu_sel -= 1
@@ -275,15 +324,36 @@ class PiratesGame:
                         self.running = False
                 self.screen.blit(self.board_surface,(0,0))
                 self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
+                self.shots() #Run the func that draws the shots remaining
                 self.screen.blit(self.cursor,(self.x_box[self.x],self.y_box[self.y]))
 
-            else: # State isn't implemented! Let's draw a big red X
-                self.screen.fill((0, 0, 0))
-                pygame.draw.line(self.screen, (255, 0, 0), (0, 0), (600, 600), 3)
-                pygame.draw.line(self.screen, (255, 0, 0), (600, 0), (0, 600), 3)
+            elif self.state == "player won" or self.state == "player lost": #Game over and Victory screen
+                if self.exit_screen_draw:    #Draw the screen the first time you end a game
+                    self.draw_end_screen()  #Draw it again cause otherwise it's bugged (it didn't have the self.state before)
+                    self.exit_screen_draw = False   # Now that it's drawn don't draw it a again
                 for event in pygame.event.get():
-                    if event.type == pg.QUIT or event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                    if event.type == pygame.QUIT: #click on the x
                         self.running = False
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_UP:
+                            self.end_screen_sel -= 1
+                            self.end_screen_sel *= -1
+                        elif event.key == pg.K_DOWN:
+                            self.end_screen_sel += 1
+                            self.end_screen_sel %= 2
+                        elif event.key == pg.K_RETURN:
+                            if self.end_screen_sel == 0:
+                                self.state = "main menu"
+                            elif self.end_screen_sel == 1:
+                                self.running = False
+                        elif event.key == pg.K_ESCAPE:
+                            self.end_screen_sel = 1
+                self.screen.blit(self.end_screen, (0, 0))
+                if self.state == "player won":
+                    cursor_height = self.menu_item_heights[self.end_screen_sel + 1]
+                else:
+                    cursor_height = self.menu_item_heights[self.end_screen_sel + 2]
+                self.screen.blit(self.menu_select_marker, (10, cursor_height))
 
             pygame.display.flip()
         pygame.quit()
