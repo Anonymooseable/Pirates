@@ -108,32 +108,34 @@ class PiratesGame:
         self.title_font = pygame.font.Font("Jean Lafitte.ttf", 50) # Police pour les titres des menus
         self.menu_font = pygame.font.Font("Primitive.ttf", 45) # Pour les éléments du menus
         self.shots_font = pygame.font.Font("Primitive.ttf", 25) # Et pour l'affichage du nombre de tirs restant
-        def menu_title_text(text): # Fonction qui 
+        def menu_title_text(text): # Fonction qui #########################
             return self.title_font.render(text, True, (255, 255, 255))
+        # Créer des titres divers pour les menus différents
         self.main_menu_title = menu_title_text("AHOY")
         self.pause_menu_title = menu_title_text("PAUSED")
         self.end_fail = menu_title_text("YER GOIN")
         self.end_fail_xtra = menu_title_text("DOWN")
         self.end_fail_xtra_xtra = menu_title_text("IN BUBBLES")
         self.end_win = menu_title_text("PLUNDERED")
-        def menu_text(text): # Function for rendering a menu item (to avoid copying True, (255, 255, 255) each time)
+        def menu_text(text): # ############################################################
             return self.menu_font.render(text, True, (255, 255, 255))
-        self.menu_select_marker = menu_text(">") # Marker for showing which item is currently selected
+        self.menu_select_marker = menu_text(">") # Marqueur qui indiquera le choix actuel du joueur
 
-        self.main_menu_image = pygame.Surface(self.screen.get_size()) # Surface containing the rendered main menu
-        self.main_menu_start = menu_text("Load the canons!")
+        self.main_menu_image = pygame.Surface(self.screen.get_size()) # Surface qui contiendra le menu principal
+        # Et maintenant, aux éléments du menu principal...
+        self.main_menu_start = menu_text("Load the cannons!")
 
-        # Difficulty menu item
+        # Élément du menu qui indique la difficulté choisie
         self.main_menu_easy = menu_text("Pansy >")
         self.main_menu_medium = menu_text("< Buff >")
         self.main_menu_hard = menu_text("< Cutthroat")
 
         self.main_menu_quit = menu_text("Flee")
-        self.main_menu_sel = 0 # Position of the cursor in the main menu
-        self.main_menu_difficulty = 0 # 0 = easy, 1 = medium, 2 = hard
-        self.difficulties = [25, 20, 15] # 30 shots in easy, etc; allows for 13, 8, and 3 misses respectively
+        self.main_menu_sel = 0 # Position du curseur dans le menu principal
+        self.main_menu_difficulty = 0 # 0 = facile, 1 = moyen, 2 = difficile
+        self.difficulties = [25, 20, 15] # On a le droit à 25 tirs en mode facile, à 20 en mode moyen et à 15 en difficile
 
-        self.pause_menu_image = pygame.Surface(self.screen.get_size()) # Surface containing the rendered quit menu
+        self.pause_menu_image = pygame.Surface(self.screen.get_size()) # Surface qui contiendra le menu de pause
         self.pause_menu_resume = menu_text("Back to the fight!")
         self.pause_menu_main = menu_text("Come about again")
         self.pause_menu_exit = menu_text("Flee")
@@ -145,32 +147,32 @@ class PiratesGame:
         self.end_exit_win_xtra = menu_text("and run!")
         self.end_exit_fail = menu_text("Surrender")
         self.end_screen_sel = 0 # Position of the cursor in the end menu
-        
+
         self.running = False
         self.state = "main menu"
-        self.redraw_main_menu() # Render the menus
+        self.redraw_main_menu() # Créer les menus
         self.draw_pause_menu()
-#------------------------------------------------------------------------------------------------------def __init__ ends here        
-            #------------------------Drawing and generation functions---------------------#
+#------------------------------------------------------------------------------------------------------Fin de l'initialisation
+            #------------------------Fonctions de dessin et de génération---------------------#
 
-    def shots(self): #Func that draws the shots remaining
-        def shots_text(text): 
+    def shots(self): # Dessine le nombre de tirs restant
+        def shots_text(text):
             return self.shots_font.render(text, True, (255, 255, 255))
         shots_drawn = shots_text(str(self.shots_remaining))
         self.screen.blit(shots_drawn,(10,10))
-        
-    def redraw_main_menu(self): # Function for drawing the main menu
-        self.main_menu_image.fill((0, 0, 0))
-        self.main_menu_image.blit(self.background, (0,0)) # Put in the background
-        self.main_menu_image.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
 
-        def center_horiz_pos(item): # Returns the x position for centering a menu item horizontally
+    def redraw_main_menu(self): # Fonction qui redessine le menu principal
+        self.main_menu_image.fill((0, 0, 0))
+        self.main_menu_image.blit(self.background, (0,0)) # D'abord, mettre le fond d'écran
+        self.main_menu_image.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Ensuite la texture de parchement (elle ne va pas très bien en-dessus du texte)
+
+        def center_horiz_pos(item): # Donne la position en abscisse pour centrer un élément
             return int(self.screen.get_width() / 2 - item.get_width() / 2)
 
-        # Draw each menu item
+        # Et on copie tous les éléments sur le menu
         self.main_menu_image.blit(self.main_menu_title, (center_horiz_pos(self.main_menu_title), self.menu_item_heights[0]))
         self.main_menu_image.blit(self.main_menu_start, (center_horiz_pos(self.main_menu_start), self.menu_item_heights[1]))
-        if self.main_menu_difficulty == 0:
+        if self.main_menu_difficulty == 0: # Choisir le bon pour la difficulté
             difficulty_image = self.main_menu_easy
         elif self.main_menu_difficulty == 1:
             difficulty_image = self.main_menu_medium
@@ -179,7 +181,7 @@ class PiratesGame:
         self.main_menu_image.blit(difficulty_image, (center_horiz_pos(difficulty_image), self.menu_item_heights[2]))
         self.main_menu_image.blit(self.main_menu_quit, (center_horiz_pos(self.main_menu_quit), self.menu_item_heights[3]))
 
-    def draw_pause_menu(self): # Function for drawing the quit menu (similar to main menu drawing function)
+    def draw_pause_menu(self): # Fonction qui dessine le menu de pause (comme le menu principal mais plus simple)
         self.pause_menu_image.fill((0, 0, 0))
         self.pause_menu_image.blit(self.background, (0,0))
         self.pause_menu_image.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
@@ -189,14 +191,14 @@ class PiratesGame:
         self.pause_menu_image.blit(self.pause_menu_resume, (center_horiz_pos(self.pause_menu_resume), self.menu_item_heights[1]))
         self.pause_menu_image.blit(self.pause_menu_main, (center_horiz_pos(self.pause_menu_main), self.menu_item_heights[2]))
         self.pause_menu_image.blit(self.pause_menu_exit, (center_horiz_pos(self.pause_menu_exit), self.menu_item_heights[3]))
-        
-    def draw_end_screen(self): # Function for drawing the end screen menu (similar to main menu drawing function)
+
+    def draw_end_screen(self): # Fonction qui dessine le menu affiché à la fin du jeu
         self.end_screen.fill((0, 0, 0))
         self.end_screen.blit(self.background, (0,0))
         self.end_screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
         def center_horiz_pos(item):
             return int(self.screen.get_width() / 2 - item.get_width() / 2)
-        if self.state == "player won":
+        if self.state == "player won": # Afficher les bons éléments en fonction de l'état de jeu (si le joueur a gagné ou perdu)
             self.end_screen.blit(self.end_win, (center_horiz_pos(self.end_win), self.menu_item_heights[0]))
             self.end_screen.blit(self.end_exit_win, (center_horiz_pos(self.end_exit_win), self.menu_item_heights[2]))
             self.end_screen.blit(self.end_exit_win_xtra, (center_horiz_pos(self.end_exit_win_xtra), self.menu_item_heights[2]+55))
@@ -205,60 +207,63 @@ class PiratesGame:
             self.end_screen.blit(self.end_fail, (center_horiz_pos(self.end_fail), self.menu_item_heights[0]))
             self.end_screen.blit(self.end_fail_xtra, (center_horiz_pos(self.end_fail_xtra), self.menu_item_heights[0]+60))
             self.end_screen.blit(self.end_fail_xtra_xtra, (center_horiz_pos(self.end_fail_xtra_xtra), self.menu_item_heights[0]+120))
-            self.end_screen.blit(self.end_exit_fail, (center_horiz_pos(self.end_exit_fail), self.menu_item_heights[3]))
             self.end_screen.blit(self.end_retry, (center_horiz_pos(self.end_retry), self.menu_item_heights[2]))
-        
-    def generate_ships(self):  #this actually generates the ship and draws the board
-        self.board = [[-1 for y in range(6)] for x in range(6)] # Create a 6x6 board filled with -1s
+            self.end_screen.blit(self.end_exit_fail, (center_horiz_pos(self.end_exit_fail), self.menu_item_heights[3]))
 
-        #Generating ship positions
-        # Notes for board contents:
-        # -1 = Square free
-        # >= 0 but < 20 = Ship here
-        # > 20 = ship, but has been hit
-        for ship_id, ship_length in enumerate([2, 3, 3, 4]): # For each ship
+    def generate_ships(self): # Fonction qui génère les bateaux et dessine les éléments statiques
+        self.board = [[-1 for y in range(6)] for x in range(6)] # Créer la plage de jeu - 6x6 cases, remplies avec des -1
+
+        # Signifiance des valeurs des cases:
+        # -2 = Case libre, le joueur a déjà tiré dessus
+        # -1 = Case libre
+        # >= 0 mais < 20 = Bateau
+        # > 20 = Bateau endommagé
+
+        # Placement des bateaux (aléatoire)
+        for ship_id, ship_length in enumerate([2, 3, 3, 4]): # Pour chaque bateau (longueurs: 1x2, 2x3, 1x4)
             generated = False
-            while not generated: # Attempt to place the ship until we are successful
-                x_or_y=random.choice(('horizontal','vertical'))
-                if x_or_y == 'horizontal':                  #code for generating horizontal ships
-                    ship_posx=random.randint(0,5-ship_length) # Subtract the length of the ship
-                    ship_posy=random.randint(0,5)
-                    generated = True # We'll be doing well until we fail (if we do)
-                    for position_on_ship in range(0, ship_length): # position_on_ship = how far along the ship we are
-                        x = ship_posx + position_on_ship # Determine x coordinate of the next square we want to set as part of the ship
-                        if self.board[x][ship_posy] != -1: # If we can't put our ship here
-                            generated = False # Then we failed.
-                    if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
-                        for position_on_ship in range(ship_length): # Same as before
+            while not generated: # On refait des coordonnées aléatoires jusqu'à ce qu'on réussit à placer le bateau
+                x_or_y=random.choice(('horizontal','vertical')) # Choisir de façon aléatoire l'orientation du bateau
+                if x_or_y == 'horizontal': # Si le bateau est horizontal, on modifiera l'abscisse pour avoir toutes les cases
+                    ship_posx=random.randint(0,5-ship_length) # Abscisse = entier aléatoire entre 0 et (5-longueur) (pour que le bateau puisse s'étendre vers la droite)
+                    ship_posy=random.randint(0,5) # Ordonnée = entier aléatoire entre 0 et 5
+                    generated = True # Tout va bien jusque là, maintenant on va tester s'il n'y a pas de collision
+                    for position_on_ship in range(0, ship_length): # position_on_ship = la distance de l'"origine" du bateau
+                        x = ship_posx + position_on_ship # Abscisse de la case qu'on teste
+                        if self.board[x][ship_posy] != -1: # Si la case n'est pas libre
+                            generated = False # Alors on a échoué
+                            break # Et on peut aller au prochain tout de suite.
+                    if generated: # Mais si on a réussi à placer le bateau...
+                        for position_on_ship in range(ship_length): # On passe de nouveau sur toutes les cases du bateau
                             x = ship_posx + position_on_ship
-                            self.board[x][ship_posy] = ship_id # We are now occupying the square!
+                            self.board[x][ship_posy] = ship_id # Et on marque la case comme occupée
 
-                else:                           #code for generating vertical ships
+                else: # De même pour les bateaux verticaux, mais on modifiera l'ordonnée
                     ship_posx=random.randint(0,5)
-                    ship_posy=random.randint(0,5-ship_length) # Subtract the length of the ship
-                    generated = True # We'll be doing well until we fail (if we do)
-                    for position_on_ship in range(0, ship_length): # position_on_ship = how far along the ship we are
-                        y = ship_posy + position_on_ship # Determine x coordinate of the next square we want to set as part of the ship
-                        if self.board[ship_posx][y] != -1: # If we can't put our ship here
-                            generated = False # Then we failed.
-                    if generated: # This will only be true if nothing failed - that means we can mark the squares as occupied
-                        for position_on_ship in range(ship_length): # Same as before
+                    ship_posy=random.randint(0,5-ship_length)
+                    generated = True
+                    for position_on_ship in range(0, ship_length):
+                        y = ship_posy + position_on_ship
+                        if self.board[ship_posx][y] != -1:
+                            generated = False
+                    if generated:
+                        for position_on_ship in range(ship_length):
                             y = ship_posy + position_on_ship
-                            self.board[ship_posx][y] = ship_id # We are now occupying the square!
+                            self.board[ship_posx][y] = ship_id
 
-        # Drawing the board
-        self.board_surface.blit(self.background, (0, 0)) # First put in the background
-        for x, x_pixels in enumerate(self.x_box):
-            for y, y_pixels in enumerate(self.y_box):
-                rect=pygame.Rect(x_pixels,y_pixels,75,75)#(x,y,width,height)
-                if self.board[x][y] == -1: # If the square is free, draw it blue
+        # Enfin, tout dessiner
+        self.board_surface.blit(self.background, (0, 0)) # Copier le fond d'écran
+        for x, x_pixels in enumerate(self.x_box): # Pour toutes les rangées (abscisse en pixels de la case en self.x_box)
+            for y, y_pixels in enumerate(self.y_box): # Et pour chaque case
+                rect=pygame.Rect(x_pixels,y_pixels,75,75) # Le rectangle correspondant à la case (position en abscisses, position en ordonnées, longueur, largeur)
+                if self.board[x][y] == -1: # Si la case est libre, dessiner des vagues dessus
                     self.board_surface.blit(self.box_image,(x_pixels,y_pixels))
-                else: # Otherwise some shade of grey depending on which ship is there
+                else: # Sinon, le bateau
                     c = pygame.Color(0, 0, 0)
-                    value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
+                    value = min(25 + 12*self.board[x][y], 100)
                     c.hsva = (0, 0, value, 100)
                     self.board_surface.fill(c,rect)
-#-------------------------------------------------------------------------------------------------------------------------def generate_ships ends here
+#---------------------------------------------------------------------------------------------------fin de la génération des bateaux
            #-----------This is the core running functions that calls all the other functions (except the generation code)-----------#
     def run(self):
         self.running = True
