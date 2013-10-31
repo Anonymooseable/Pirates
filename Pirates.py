@@ -3,46 +3,48 @@
 import pygame
 import pygame as pg
 import random
-class PiratesGame:
-    def __init__(self):
-        pygame.init()
-        self.clock=pygame.time.Clock()
-        # Creating a display creates a window to draw to. We make it 600x600px and call it "screen"
-        self.screen = pygame.display.set_mode((600, 600))
-        # Sizes:
-        #  - 25px on border of window
-        #  - 20px between squares
-        #  - 75px per square
-        #  - Half a square = 37px
 
-        pygame.display.set_caption('Yarrrr!!') # Set a nice window title
+# Classe qui maintient l'état du jeu
+class PiratesGame:
+    def __init__(self): # Fonction appelée lors de la création d'un PiratesGame
+        pygame.init() # Initialiser pygame pour que tout fonctionne
+        self.clock=pygame.time.Clock() # Créer une Clock qui gère la synchronisation
+        # Créer une fenêtre et la stocker dans l'attribut de la classe "screen" (taille 600x600 pixels)
+        self.screen = pygame.display.set_mode((600, 600))
+        # Espacement:
+        #  - 25px de marge sur les 4 bords de la fenêtre
+        #  - 20px entre toutes les cases
+        #  - Chaque case = 75x75px
+
+        pygame.display.set_caption('Yarrrr!!') # Définir le titre de la fenêtre
 
         #Images--------------------------
 
-        # Cursor - moved around by the player to target a square (crosshair)
+        # pygame.image.load("nom de fichier") charge une image, et convert_alpha() la convertit dans un format qui est adapté pour l'afficher à l'écran avec sa transparence (ou, si on n'a pas besoin de transparence, on utilisera convert())
+        # Curseur qui marque la case sélectionnée
         self.cursor = pygame.image.load("Cross hair.png").convert_alpha()
 
-        # Box image - image used for a square = some waves
+        # Image pour une case vide/non découverte
         self.box_image = pygame.image.load("box.png").convert_alpha()
 
-        # Background image for (almost?) everything
-        self.background = pygame.image.load("board.png").convert_alpha()
+        # Fond d'écran
+        self.background = pygame.image.load("board.png").convert()
 
-        # Parchment image for prettifulness
+        # Texture de parchemin pour mettre en-dessus
         self.parch = pygame.image.load("parchment.png").convert_alpha()
 
-        # Awesome splash animation
+        # Animation: plouf!
         self.splash = pygame.image.load("splash.png").convert_alpha()
 
-        # Surface for storing the board
-        self.board_surface = pygame.Surface(self.screen.get_size()).convert_alpha()
+        # Surface (ensemble rectangulaire de pixels) où l'on dessinera tout ce qui ne bouge pas
+        self.board_surface = pygame.Surface(self.screen.get_size()).convert()
 
-        #Vars----------------------------
-        self.x = 0 # X position of the cursor
-        self.y = 0 # Y position of the cursor
-        #Functions-----------------------
-        def left(self):
-            if self.x != 0:
+        self.x = 0 # Position du curseur en abscisses
+        self.y = 0 # Position du curseur en ordonnées
+
+        # Fonctions réagissant aux touches de clavier
+        def left(self): # Déplacer le curseur vers la gauche
+            if self.x != 0: # Mais seulement s'il n'est pas déjà tout à gauche
                 self.x -= 1
         def right(self):
             if self.x != 5:
@@ -53,44 +55,44 @@ class PiratesGame:
         def up(self):
             if self.y!=0:
                 self.y -= 1
-        def escape(self): # Switch to the quit menu state
+        def escape(self): # Mettre le jeu en pause
             self.state = "pause menu"
             self.old_state = "targeting"
 
-        def fire(self): # Fire at a square
-            if self.board[self.x][self.y] in (-1,-2): # Empty square targeted: play splash animation
-                self.board[self.x][self.y] = -2 # Denotes that it's been targeted already
-                for frame in range(0,35): # Animation has 35 frames (frame 0 to frame 34)
-                    self.clock.tick(25) # Delay to ensure 25 FPS
-                    rect=pygame.Rect(0+frame*75,0,75,75) # Region of the splash spritesheet to draw
-                    self.screen.blit(self.board_surface, (0, 0)) # Draw the normal background image
-                    self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect) # Draw the animation frame
-                    self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Draw the parchment on top
-                    self.shots()#Run the func that draws the shots remaining
-                    pygame.display.flip() # And flip the screen
-            elif self.board[self.x][self.y] < 20: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
-                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
-                self.board_surface.fill((240,150,75),rect) # Put orange on the board
-                self.board[self.x][self.y] += 20 # Mark this square as damaged
+        def fire(self): # Tirer sur une case (dont les coordonnées seront déterminées par self.x et self.y, les coordonnées du curseur)
+            if self.board[self.x][self.y] in (-1,-2): # La case est vide: plouf!
+                self.board[self.x][self.y] = -2 # Indiquer qu'on a déjà tiré sur cette case
+                for frame in range(0,35): # L'animation comporte 35 images
+                    self.clock.tick(25) # On attend pour assurer une fréquence d'image maximale de 25 images/seconde
+                    rect=pygame.Rect(0+frame*75,0,75,75) # On détermine quelle image on veut dessiner (quelle région du fichier)
+                    self.screen.blit(self.board_surface, (0, 0)) # Copier l'image statique sur l'écran
+                    self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect) # Copier l'image actuelle de l'animation, à la bonne position
+                    self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Copier la texture de parchemin par-dessus
+                    self.shots()# Dessiner le nombre de tirs qui restent
+                    pygame.display.flip() # Et afficher le tout
+            elif self.board[self.x][self.y] < 20: # Il y a un bateau sur la case!
+                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # On détermine les coordonnées du carré
+                self.board_surface.fill((240,150,75),rect) # Remplir ce carré en orange sur l'image statique
+                self.board[self.x][self.y] += 20 # Marquer que le bateau qui y est situé est endommagé
 
-                player_won = True # And now check if the player finished
+                player_won = True
                 for row in self.board:
-                    for square in row:
-                        if 0 <= square < 20: # If it's a square that hasn't been hit yet
-                            player_won = False
-                if player_won:
-                    self.state = "player won"
-                    self.exit_screen_draw = True    #Draw the screen the first time you end a game
-                    return # To avoid the state then getting set to player lost, break out of the function
-            # Otherwise, there's an already damaged ship here (>= 20) or a previously targeted empty square (-2): do nothing
-            # In any case, reduce the number of shots and set the state to player lost if we're all out
+                    for square in row: # Ensuite on regarde sur toutes les cases pour voir s'il reste des bateaux ennemis
+                        if 0 <= square < 20: # Et s'il y en a...
+                            player_won = False # Le joueur n'a pas gagné
+                            break # Et on peut sortir de la boucle tout de suite.
+                if player_won: # Ensuite si le joueur a gagné...
+                    self.state = "player won" # On se met dans l'état de jeu "player won" (où l'on affiche un menu pour recommencer ou pour quitter le jeu)
+                    self.exit_screen_draw = True #################################################
+                    return # On évite de déterminer si le joueur a perdu en sortant tout de suite de la fonction
+            # Et si la valeur de la case est supérieure à 20, le joueur a tiré sur une case où il avait déjà touché un bateau, et gaspillé un tir... Tant pis pour lui!
+            # Dans tous les cas, on soustrait 1 au nombre de tirs restant.
             self.shots_remaining -= 1
-            if self.shots_remaining <= 0:
-                self.state = "player lost"
-                self.exit_screen_draw = True    #Draw the screen the first time you end a game
+            if self.shots_remaining <= 0: # Et si le joueur n'en a plus...
+                self.state = "player lost" # Le joueur a perdu...
+                self.exit_screen_draw = True # Draw the screen the first time you end a game #########################
 
-        #Other---------------------------
-        self.key_handlers = {   # all in-game commands
+        self.key_handlers = { # Associer des touches du clavier aux fonctions qu'on vient de créer
             pg.K_LEFT: left,
             pg.K_RIGHT: right,
             pg.K_DOWN: down,
@@ -98,15 +100,15 @@ class PiratesGame:
             pg.K_ESCAPE: escape,
             pg.K_RETURN: fire
         }
-        self.x_box = [25,120,215,310,405,500] # Distance of the left border of each box from the left of the screen
-        self.y_box = [25,120,215,310,405,500] # Distance of the top border of each box from the top of the screen
+        self.x_box = [25,120,215,310,405,500] # Position du bord de gauche des six cases (distance du bord de gauche de la fenêtre)
+        self.y_box = [25,120,215,310,405,500] # Position du bord supérieur des cases (distance du bord supérieur de la fenêtre)
 
-        # Setting up all text and fonts
-        self.menu_item_heights = [60, 180, 270, 360, 450] # Distance from top of screen of each menu item
-        self.title_font = pygame.font.Font("Jean Lafitte.ttf", 50)
-        self.menu_font = pygame.font.Font("Primitive.ttf", 45)
-        self.shots_font = pygame.font.Font("Primitive.ttf", 25)
-        def menu_title_text(text): # Function for rendering a menu item (to avoid copying True, (255, 255, 255) each time)
+        # Chargement des polices
+        self.menu_item_heights = [60, 180, 270, 360, 450] # Espacement des éléments des menus (premier élément à 60px du bord supérieur, etc.)
+        self.title_font = pygame.font.Font("Jean Lafitte.ttf", 50) # Police pour les titres des menus
+        self.menu_font = pygame.font.Font("Primitive.ttf", 45) # Pour les éléments du menus
+        self.shots_font = pygame.font.Font("Primitive.ttf", 25) # Et pour l'affichage du nombre de tirs restant
+        def menu_title_text(text): # Fonction qui 
             return self.title_font.render(text, True, (255, 255, 255))
         self.main_menu_title = menu_title_text("AHOY")
         self.pause_menu_title = menu_title_text("PAUSED")
