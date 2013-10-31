@@ -119,7 +119,7 @@ class PiratesGame:
         self.menu_select_marker = menu_text(">") # Marker for showing which item is currently selected
 
         self.main_menu_image = pygame.Surface(self.screen.get_size()) # Surface containing the rendered main menu
-        self.main_menu_start = menu_text("Load the canons!")
+        self.main_menu_start = menu_text("Load the cannons!")
 
         # Difficulty menu item
         self.main_menu_easy = menu_text("Pansy >")
