@@ -264,46 +264,47 @@ class PiratesGame:
                     c.hsva = (0, 0, value, 100)
                     self.board_surface.fill(c,rect)
 #---------------------------------------------------------------------------------------------------fin de la génération des bateaux
-           #-----------This is the core running functions that calls all the other functions (except the generation code)-----------#
+
+    #-----------Fonction qui contient le jeu en lui-même-----------#
     def run(self):
-        self.running = True
-        while self.running: # While the user hasn't confirmed that they want to quit
-            self.clock.tick(25)
-            if self.state == "main menu":
-                for event in pygame.event.get(): # Handle events
-                    if event.type == pygame.QUIT: #click on the x
-                        self.running = False
-                    if event.type == pg.KEYDOWN: # A key pas pressed
-                        if event.key == pg.K_UP: # The key was the up key
-                            self.main_menu_sel -= 1 # Move the cursor up in the menu
-                            self.main_menu_sel %= 3 # Wrap to the bottom if it's out of bound
+        self.running = True # On est en marche
+        while self.running: # Tant qu'on l'est
+            self.clock.tick(25) # Délai pour une fréquence d'images de 25
+            if self.state == "main menu": # Si on est dans le menu principal
+                for event in pygame.event.get(): # Traiter les événements (entrée de données)
+                    if event.type == pygame.QUIT: # Le joueur a fermé la fenêtre
+                        self.running = False # On quitte!
+                    if event.type == pg.KEYDOWN: # On a appuyé sur une touche du clavier
+                        if event.key == pg.K_UP:
+                            self.main_menu_sel -= 1 # Déplacer le curseur vers le haut dans le menu
+                            self.main_menu_sel %= 3 # Puis utiliser un modulo pour le faire passer à 2 s'il est à -1
                         elif event.key == pg.K_DOWN:
-                            self.main_menu_sel += 1 # Move it down
-                            self.main_menu_sel %= 3
-                        elif event.key == pg.K_ESCAPE: # Move the cursor to the "quit" item
-                            self.main_menu_sel = 2
-                        elif event.key == pg.K_RETURN: # Confirm a choice
-                            if self.main_menu_sel == 0: # Start: set the state to targeting
-                                self.generate_ships()
-                                self.state = "targeting"
-                                self.shots_remaining = self.difficulties[self.main_menu_difficulty]
-                            elif self.main_menu_sel == 2:
-                                self.running = False
-                        # Increase/Decrease the difficulty if the cursor is on the second menu item (difficulty) and it's not already at the minimum/maximum
-                        elif event.key == pg.K_LEFT and self.main_menu_sel == 1 and self.main_menu_difficulty > 0:
+                            self.main_menu_sel += 1 # Déplacer vers le bas
+                            self.main_menu_sel %= 3 # Modulo: 3 => 0
+                        elif event.key == pg.K_ESCAPE: # Si l'utilisateur appuie sur la touche échap
+                            self.main_menu_sel = 2 # On met le curseur sur le 3eme élément du menu (quitter)
+                        elif event.key == pg.K_RETURN: # L'utilisateur a confirmé
+                            if self.main_menu_sel == 0: # Premier élément du menu: commencer le jeu
+                                self.generate_ships() # On place les bateaux
+                                self.shots_remaining = self.difficulties[self.main_menu_difficulty] # On initialise le nombre de tirs
+                                self.state = "targeting" # Et on se met en état de jeu
+                            elif self.main_menu_sel == 2: # Troisième élément du menu: quitter
+                                self.running = False # Alors on quitte!
+                        # Si le curseur est sur le 2ème élément du menu...
+                        elif event.key == pg.K_LEFT and self.main_menu_sel == 1 and self.main_menu_difficulty > 0: # Gauche = baisser la difficulté si possible
                             self.main_menu_difficulty -= 1
-                            self.redraw_main_menu()
-                        elif event.key == pg.K_RIGHT and self.main_menu_sel == 1 and self.main_menu_difficulty < 2:
+                            self.redraw_main_menu() # Et on redessine le menu principal pour prendre en compte le changement d'un de ses éléments
+                        elif event.key == pg.K_RIGHT and self.main_menu_sel == 1 and self.main_menu_difficulty < 2: # Droite = l'augmenter
                             self.main_menu_difficulty += 1
                             self.redraw_main_menu()
-                # After handling events, draw the menu to the screen
+                # Et on dessine le menu principal
                 self.screen.blit(self.main_menu_image, (0, 0))
-                # And the marker
-                self.screen.blit(self.menu_select_marker, (10, self.menu_item_heights[self.main_menu_sel+1]))
+                # Et le marqueur qui indique la sélection
+                self.screen.blit(self.menu_select_marker, (10, self.menu_item_heights[self.main_menu_sel+1])) # (à 10px du bord de gauche de la fenêtre, et aligné avec l'élément choisi)
 
-            elif self.state == "pause menu": # Mostly like the main menu, just simpler
+            elif self.state == "pause menu": # Comme le menu principal mais plus simple
                 for event in pygame.event.get():
-                    if event.type == pygame.QUIT: #click on the x
+                    if event.type == pygame.QUIT:
                         self.running = False
                     if event.type == pg.KEYDOWN:
                         if event.key == pg.K_UP:
@@ -313,34 +314,34 @@ class PiratesGame:
                             self.pause_menu_sel += 1
                             self.pause_menu_sel %= 3
                         elif event.key == pg.K_RETURN:
-                            if self.pause_menu_sel == 0:
+                            if self.pause_menu_sel == 0: # Continuer
                                 self.state = "targeting"
-                            elif self.pause_menu_sel == 1:
+                            elif self.pause_menu_sel == 1: # Retour au menu principal
                                 self.state = "main menu"
-                            elif self.pause_menu_sel == 2:
+                            elif self.pause_menu_sel == 2: # Quitter
                                 self.running = False
                 self.screen.blit(self.pause_menu_image, (0, 0))
                 cursor_height = self.menu_item_heights[self.pause_menu_sel + 1]
                 self.screen.blit(self.menu_select_marker, (10, cursor_height))
 
-            elif self.state == "targeting": # Actually playing
+            elif self.state == "targeting": # On est en train de jouer
                 for event in pygame.event.get():
-                    if event.type==pg.KEYDOWN and event.key in self.key_handlers:
-                        self.key_handlers[event.key](self)
+                    if event.type==pg.KEYDOWN and event.key in self.key_handlers: # Pour un appui de touche
+                        self.key_handlers[event.key](self) # On fait appel à la fonction correspondante si elle existe
 
-                    if event.type == pygame.QUIT:
+                    if event.type == pygame.QUIT: # Quitter si l'utilisateur ferme la fenêtre
                         self.running = False
-                self.screen.blit(self.board_surface,(0,0))
-                self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT)
-                self.shots() #Run the func that draws the shots remaining
-                self.screen.blit(self.cursor,(self.x_box[self.x],self.y_box[self.y]))
+                self.screen.blit(self.board_surface,(0,0)) # Dessiner le "terrain de jeu"
+                self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Et le parchement par-dessus
+                self.shots() # Puis le nombre de tirs restant
+                self.screen.blit(self.cursor,(self.x_box[self.x],self.y_box[self.y])) # Et le curseur.
 
-            elif self.state == "player won" or self.state == "player lost": #Game over and Victory screen
-                if self.exit_screen_draw:    #Draw the screen the first time you end a game
-                    self.draw_end_screen()  #Draw it again cause otherwise it's bugged (it didn't have the self.state before)
-                    self.exit_screen_draw = False   # Now that it's drawn don't draw it a again
+            elif self.state == "player won" or self.state == "player lost": # Fin du jeu: dessiner le menu (comme les menus principal et de pause)
+                if self.exit_screen_draw:
+                    self.draw_end_screen() # Redessiner le menu de fin de jeu si nécessaire
+                    self.exit_screen_draw = False
                 for event in pygame.event.get():
-                    if event.type == pygame.QUIT: #click on the x
+                    if event.type == pygame.QUIT:
                         self.running = False
                     if event.type == pg.KEYDOWN:
                         if event.key == pg.K_UP:
@@ -363,7 +364,7 @@ class PiratesGame:
                     cursor_height = self.menu_item_heights[self.end_screen_sel + 2]
                 self.screen.blit(self.menu_select_marker, (10, cursor_height))
 
-            pygame.display.flip()
+            pygame.display.flip() # Et tout afficher
         pygame.quit()
 
 
