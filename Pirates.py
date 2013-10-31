@@ -26,7 +26,7 @@ class PiratesGame:
         self.box_image = pygame.image.load("box.png").convert_alpha()
 
         # Background image for (almost?) everything
-        self.background = pygame.image.load("board.png").convert_alpha()
+        self.background = pygame.image.load("board.png").convert()
 
         # Parchment image for prettifulness
         self.parch = pygame.image.load("parchment.png").convert_alpha()
@@ -35,7 +35,7 @@ class PiratesGame:
         self.splash = pygame.image.load("splash.png").convert_alpha()
 
         # Surface for storing the board
-        self.board_surface = pygame.Surface(self.screen.get_size()).convert_alpha()
+        self.board_surface = pygame.Surface(self.screen.get_size()).convert()
 
         #Vars----------------------------
         self.x = 0 # X position of the cursor
