@@ -143,20 +143,20 @@ class PiratesGame:
         self.end_exit_win_xtra = menu_text("and run!")
         self.end_exit_fail = menu_text("Surrender")
         self.end_screen_sel = 0 # Position of the cursor in the end menu
-        
+
         self.running = False
         self.state = "main menu"
         self.redraw_main_menu() # Render the menus
         self.draw_pause_menu()
-#------------------------------------------------------------------------------------------------------def __init__ ends here        
+#------------------------------------------------------------------------------------------------------def __init__ ends here
             #------------------------Drawing and generation functions---------------------#
 
     def shots(self): #Func that draws the shots remaining
-        def shots_text(text): 
+        def shots_text(text):
             return self.shots_font.render(text, True, (255, 255, 255))
         shots_drawn = shots_text(str(self.shots_remaining))
         self.screen.blit(shots_drawn,(10,10))
-        
+
     def redraw_main_menu(self): # Function for drawing the main menu
         self.main_menu_image.fill((0, 0, 0))
         self.main_menu_image.blit(self.background, (0,0)) # Put in the background
@@ -187,7 +187,7 @@ class PiratesGame:
         self.pause_menu_image.blit(self.pause_menu_resume, (center_horiz_pos(self.pause_menu_resume), self.menu_item_heights[1]))
         self.pause_menu_image.blit(self.pause_menu_main, (center_horiz_pos(self.pause_menu_main), self.menu_item_heights[2]))
         self.pause_menu_image.blit(self.pause_menu_exit, (center_horiz_pos(self.pause_menu_exit), self.menu_item_heights[3]))
-        
+
     def draw_end_screen(self): # Function for drawing the end screen menu (similar to main menu drawing function)
         self.end_screen.fill((0, 0, 0))
         self.end_screen.blit(self.background, (0,0))
@@ -205,7 +205,7 @@ class PiratesGame:
             self.end_screen.blit(self.end_fail_xtra_xtra, (center_horiz_pos(self.end_fail_xtra_xtra), self.menu_item_heights[0]+120))
             self.end_screen.blit(self.end_exit_fail, (center_horiz_pos(self.end_exit_fail), self.menu_item_heights[3]))
             self.end_screen.blit(self.end_retry, (center_horiz_pos(self.end_retry), self.menu_item_heights[2]))
-        
+
     def generate_ships(self):  #this actually generates the ship and draws the board
         self.board = [[-1 for y in range(6)] for x in range(6)] # Create a 6x6 board filled with -1s
 
