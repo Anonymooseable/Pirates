@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import random
+
 import pygame
 import pygame as pg
-import random
+
 class PiratesGame:
     def __init__(self):
         pygame.init()
@@ -40,7 +42,8 @@ class PiratesGame:
         #Vars----------------------------
         self.x = 0 # X position of the cursor
         self.y = 0 # Y position of the cursor
-        #Functions-----------------------
+
+        #Key handler functions-----------------------
         def left(self):
             if self.x != 0:
                 self.x -= 1
