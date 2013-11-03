@@ -43,64 +43,6 @@ class PiratesGame:
         self.x = 0 # X position of the cursor
         self.y = 0 # Y position of the cursor
 
-        #Key handler functions-----------------------
-        def left(self):
-            if self.x != 0:
-                self.x -= 1
-        def right(self):
-            if self.x != 5:
-                self.x += 1
-        def down(self):
-            if self.y != 5:
-                self.y += 1
-        def up(self):
-            if self.y!=0:
-                self.y -= 1
-        def escape(self): # Switch to the quit menu state
-            self.state = "pause menu"
-            self.old_state = "targeting"
-
-        def fire(self): # Fire at a square
-            if self.board[self.x][self.y] in (-1,-2): # Empty square targeted: play splash animation
-                self.board[self.x][self.y] = -2 # Denotes that it's been targeted already
-                for frame in range(0,35): # Animation has 35 frames (frame 0 to frame 34)
-                    self.clock.tick(25) # Delay to ensure 25 FPS
-                    rect=pygame.Rect(0+frame*75,0,75,75) # Region of the splash spritesheet to draw
-                    self.screen.blit(self.board_surface, (0, 0)) # Draw the normal background image
-                    self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect) # Draw the animation frame
-                    self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Draw the parchment on top
-                    self.shots()#Run the func that draws the shots remaining
-                    pygame.display.flip() # And flip the screen
-            elif self.board[self.x][self.y] < 20: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
-                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
-                self.board_surface.fill((240,150,75),rect) # Put orange on the board
-                self.board[self.x][self.y] += 20 # Mark this square as damaged
-
-                player_won = True # And now check if the player finished
-                for row in self.board:
-                    for square in row:
-                        if 0 <= square < 20: # If it's a square that hasn't been hit yet
-                            player_won = False
-                if player_won:
-                    self.state = "player won"
-                    self.exit_screen_draw = True    #Draw the screen the first time you end a game
-                    return # To avoid the state then getting set to player lost, break out of the function
-            # Otherwise, there's an already damaged ship here (>= 20) or a previously targeted empty square (-2): do nothing
-            # In any case, reduce the number of shots and set the state to player lost if we're all out
-            self.shots_remaining -= 1
-            if self.shots_remaining <= 0:
-                self.state = "player lost"
-                self.exit_screen_draw = True    #Draw the screen the first time you end a game
-
-        #Other---------------------------
-        self.key_handlers = {   # all in-game commands
-            pg.K_LEFT: left,
-            pg.K_RIGHT: right,
-            pg.K_DOWN: down,
-            pg.K_UP: up,
-            pg.K_ESCAPE: escape,
-            pg.K_RETURN: fire
-        }
         self.x_box = [25,120,215,310,405,500] # Distance of the left border of each box from the left of the screen
         self.y_box = [25,120,215,310,405,500] # Distance of the top border of each box from the top of the screen
 
@@ -321,8 +263,53 @@ class PiratesGame:
 
             elif self.state == "targeting": # Actually playing
                 for event in pygame.event.get():
-                    if event.type==pg.KEYDOWN and event.key in self.key_handlers:
-                        self.key_handlers[event.key](self)
+                    if event.type==pg.KEYDOWN: # Handle key...
+                        if event.key == pg.K_LEFT:
+                            if self.x != 0:
+                                self.x -= 1
+                        elif event.key ==pg.K_RIGHT:
+                            if self.x != 5:
+                                self.x += 1
+                        elif event.key ==pg.K_DOWN:
+                            if self.y != 5:
+                                self.y += 1
+                        elif event.key ==pg.K_UP:
+                            if self.y!=0:
+                                self.y -= 1
+                        elif event.key ==pg.K_ESCAPE: # Switch to the quit menu state
+                            self.state = "pause menu"
+                            self.old_state = "targeting"
+
+                        elif event.key ==pg.K_RETURN: # Fire at a square
+                            if self.board[self.x][self.y] in (-1,-2): # Empty square targeted: play splash animation
+                                self.board[self.x][self.y] = -2 # Denotes that it's been targeted already
+                                for frame in range(0,35): # Animation has 35 frames (frame 0 to frame 34)
+                                    self.clock.tick(25) # Delay to ensure 25 FPS
+                                    rect=pygame.Rect(0+frame*75,0,75,75) # Region of the splash spritesheet to draw
+                                    self.screen.blit(self.board_surface, (0, 0)) # Draw the normal background image
+                                    self.screen.blit(self.splash,(self.x_box[self.x],self.y_box[self.y]),rect) # Draw the animation frame
+                                    self.screen.blit(self.parch,(0,0),None,pg.BLEND_RGBA_MULT) # Draw the parchment on top
+                                    self.shots()#Run the func that draws the shots remaining
+                                    pygame.display.flip() # And flip the screen
+                            elif self.board[self.x][self.y] < 20: # Square with a ship on it targeted: set its colour to orange (future: play ship hit animation)
+                                rect=pygame.Rect(self.x_box[self.x],self.y_box[self.y],75,75) # Get the square
+                                self.board_surface.fill((240,150,75),rect) # Put orange on the board
+                                self.board[self.x][self.y] += 20 # Mark this square as damaged
+
+                                player_won = True # And now check if the player finished
+                                for row in self.board:
+                                    for square in row:
+                                        if 0 <= square < 20: # If it's a square that hasn't been hit yet
+                                            player_won = False
+                                if player_won:
+                                    self.state = "player won"
+                                    self.exit_screen_draw = True # Draw the screen the first time you end a game
+                            # Otherwise, there's an already damaged ship here (>= 20) or a previously targeted empty square (-2): do nothing
+                            # In any case, reduce the number of shots and set the state to player lost if we're all out
+                            self.shots_remaining -= 1
+                            if self.shots_remaining <= 0:
+                                self.state = "player lost"
+                                self.exit_screen_draw = True    #Draw the screen the first time you end a game
 
                     if event.type == pygame.QUIT:
                         self.running = False
