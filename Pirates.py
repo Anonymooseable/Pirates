@@ -194,13 +194,8 @@ class PiratesGame:
         for x, x_pixels in enumerate(self.x_box):
             for y, y_pixels in enumerate(self.y_box):
                 rect=pygame.Rect(x_pixels,y_pixels,75,75)#(x,y,width,height)
-                if self.board[x][y] == -1: # If the square is free, draw it blue
-                    self.board_surface.blit(self.box_image,(x_pixels,y_pixels))
-                else: # Otherwise some shade of grey depending on which ship is there
-                    c = pygame.Color(0, 0, 0)
-                    value = min(25 + 12*self.board[x][y], 100) # Value between 0 and 100
-                    c.hsva = (0, 0, value, 100)
-                    self.board_surface.fill(c,rect)
+                self.board_surface.blit(self.box_image,(x_pixels,y_pixels))
+
 #-------------------------------------------------------------------------------------------------------------------------def generate_ships ends here
            #-----------This is the core running functions that calls all the other functions (except the generation code)-----------#
     def run(self):
