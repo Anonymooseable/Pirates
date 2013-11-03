@@ -18,7 +18,7 @@ Nous nous contentons de 25 images par seconde, car l'animation présente dans no
 On maintient l'état du jeu dans un objet. Celui-ci comporte de diverses variables, par exemple:
 - L'état général - si on est dans un menu et si oui lequel, ou bien dans le jeu lui-même
 - La position du curseur, que ce soit celui représentant le choix dans le menu ou celui marquant la case visée par le joueur
-- L'écran et d'autres surfaces (images, textes, plage de jeu)
+- L'écran et d'autres surfaces (images, textes, table de jeu)
 
 Passons au code!
 """
