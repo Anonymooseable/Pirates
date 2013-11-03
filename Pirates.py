@@ -1,4 +1,27 @@
 #!/usr/bin/env python3
+"""
+Quelques explications...
+
+- pygame est une bibliothèque qui permet de créer des fenêtres et de dessiner dedans (ainsi que de faire des saisies)
+- Tout ce qui concerne le dessin marche avec des surfaces: c'est des images numériques, des ensembles rectangulaires de pixels. On peut les créer vide, ou en chargeant une image, ou bien à partir d'une chaîne de caractères, en utilisant une police...
+- L'écran (le contenu de la fenêtre) est aussi représenté par une surface. Les dessins qu'on fait dessus sont stockés, et le contenu n'est affiché que lorsqu'on appelle la fonction pygame.display.flip(). On peut s'imaginer que l'on dessine sur la face arrière de l'écran et que l'on le retourne avec la fonction flip()...
+- On peut copier le contenu d'une surface sur une autre: ce processus s'appelle "blit" et on s'en servira beaucoup!
+- Les saisies sont faites sous forme d'événements: on demande a pygame s'il y en a, puis on les traite un par un.
+- Ceci se fait dans la boucle principale du jeu, ce qui donne un processus ressemblant à cela:
+    1. Traiter les événements
+    2. Avancer la logique du jeu
+    3. Tout dessiner
+    4. Afficher
+Ce cycle se répète à une fréquence définie, que l'on appelle la fréquence d'images. Dans les jeux plus complexes, on cherche généralement à avoir une fréquence d'images de 60 images par seconde à peu près pour donner une impression de mouvement fluide.
+Nous nous contentons de 25 images par seconde, car l'animation présente dans notre jeu est assez simple.
+
+On maintient l'état du jeu dans un objet. Celui-ci comporte de diverses variables, par exemple:
+- L'état général - si on est dans un menu et si oui lequel, ou bien dans le jeu lui-même
+- La position du curseur, que ce soit celui représentant le choix dans le menu ou celui marquant la case visée par le joueur
+- L'écran et d'autres surfaces (images, textes, plage de jeu)
+
+Passons au code!
+"""
 
 import random
 
