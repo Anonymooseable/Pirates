@@ -331,7 +331,6 @@ class PiratesGame:
                                 if player_won: # Ensuite si le joueur a gagné...
                                     self.state = "player won" # On se met dans l'état de jeu "player won" (où l'on affiche un menu pour recommencer ou pour quitter le jeu)
                                     self.exit_screen_draw = True #################################################
-                                    return # On évite de déterminer si le joueur a perdu en sortant tout de suite de la fonction
                             # Et si la valeur de la case est supérieure à 20, le joueur a tiré sur une case où il avait déjà touché un bateau, et gaspillé un tir... Tant pis pour lui!
                             # Dans tous les cas, on soustrait 1 au nombre de tirs restant.
                             self.shots_remaining -= 1
@@ -376,7 +375,6 @@ class PiratesGame:
 
             pygame.display.flip() # Et tout afficher
         pygame.quit()
-
 
 if __name__ == "__main__":
     PiratesGame().run()
