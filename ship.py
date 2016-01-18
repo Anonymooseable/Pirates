@@ -26,7 +26,7 @@ from draw import Drawable
 
 from colours import default_colour, preplaced_colour, prepicked_colour, error_colour, destroyed_colour
 
-class ShipDestroyed (circuits.Event):
+class ship_destroyed (circuits.Event):
 	"""Fired by a ship when it gets destroyed."""
 
 class Ship (Drawable):
@@ -125,7 +125,7 @@ class Ship (Drawable):
 	def damages(self, value):
 		self._damages = value
 		if self._damages >= self.length:
-			self.fire(ShipDestroyed(self))
+			self.fire(ship_destroyed(self))
 			self.colour = ColourAnimation(4.0, default_colour, destroyed_colour).register(self)
 			self.destroyed = True
 

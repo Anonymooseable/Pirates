@@ -74,11 +74,11 @@ the cursor. """
 		def _right(self):
 			self.cursor.x += 1
 
-		self.keydown_handler(pg.K_LEFT) (CursorModifier(_left, _right))
-		self.keydown_handler(pg.K_RIGHT) (CursorModifier(_right, _left))
-		self.keydown_handler(pg.K_UP) (CursorModifier(_up, _down))
-		self.keydown_handler(pg.K_DOWN) (CursorModifier(_down, _up))
-		self.keydown_handler(pg.K_RETURN) (self.complete)
+		self.key_down_handler(pg.K_LEFT) (CursorModifier(_left, _right))
+		self.key_down_handler(pg.K_RIGHT) (CursorModifier(_right, _left))
+		self.key_down_handler(pg.K_UP) (CursorModifier(_up, _down))
+		self.key_down_handler(pg.K_DOWN) (CursorModifier(_down, _up))
+		self.key_down_handler(pg.K_RETURN) (self.complete)
 
 	def cursor_ok(self):
 		"""
@@ -87,9 +87,9 @@ Returns true if the currently set cursor is acceptable and False if not.
 By default, checks if the cursor is within self.root.grid's extents."""
 		return 0 <= self.cursor.x < self.root.grid.width and 0 <= self.cursor.y < self.root.grid.height
 
-	def update_cursor(self): # Updates the coordinates (in pixels) of the cursor
+	def update_cursor(self): # updates the coordinates (in pixels) of the cursor
 		"""
-Updates the cursor.
+updates the cursor.
 
 By default, will set the cursor_pixelpos attribute to the coordinates in
 pixels of the centre of the square at the coordinates (cursor_x, cursor_y)."""

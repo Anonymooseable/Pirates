@@ -40,7 +40,7 @@ to its constructor.
 		self.selected_length = 0
 		self.temp_ship = ship.Ship(length = self.lengths[self.selected_length])
 
-		@self.keydown_handler(pg.K_RETURN)
+		@self.key_down_handler(pg.K_RETURN)
 		def confirm_ship(self):
 			length = self.lengths.pop(self.selected_length)
 			if self.lengths: # If we have any more ships to insert afterwards
@@ -49,14 +49,14 @@ to its constructor.
 			self.root.state_queue.insert(0, PlacingShipState(ship_length = length))
 			self.unregister() # And pass on to it by unregistering ourselves
 
-		@self.keydown_handler(pg.K_PLUS)
-		@self.keydown_handler(pg.K_EQUALS)
+		@self.key_down_handler(pg.K_PLUS)
+		@self.key_down_handler(pg.K_EQUALS)
 		def increase_length(self):
 			self.selected_length += 1
 			self.selected_length %= len(self.lengths)
 			self.temp_ship.length = self.lengths[self.selected_length]
 
-		@self.keydown_handler(pg.K_MINUS)
+		@self.key_down_handler(pg.K_MINUS)
 		def decrease_length(self):
 			self.selected_length -= 1
 			self.selected_length %= len(self.lengths)

@@ -22,94 +22,94 @@ from circuits.core.handlers import handler
 
 import pygame
 
-class Update (circuits.Event):
-	"""Update Event"""
+class update (circuits.Event):
+	"""update Event"""
 
-class PygameEvent (circuits.Event):
+class pygame_event (circuits.Event):
 	"""Generic pygame event"""
 
-class KeyEvent (PygameEvent):
+class key_event (pygame_event):
 	"""Generic Key event"""
 
-class KeyDown (KeyEvent):
-	"""KeyDown Event"""
+class key_down (key_event):
+	"""key_down Event"""
 
-class KeyUp (KeyEvent):
-	"""KeyUp Event"""
+class key_up (key_event):
+	"""key_up Event"""
 
-class MouseEvent (PygameEvent):
+class mouse_event (pygame_event):
 	"""Generic Mouse event"""
 
-class MouseDown (MouseEvent):
-	"""MouseDown Event"""
+class mouse_down (mouse_event):
+	"""mouse_down Event"""
 
-class MouseUp (MouseEvent):
-	"""MouseUp Event"""
+class mouse_up (mouse_event):
+	"""mouse_up Event"""
 
-class MouseMove(MouseEvent):
-	"""MouseMove Event"""
+class mouse_move(mouse_event):
+	"""mouse_move Event"""
 
-class Quit (PygameEvent):
+class quit (pygame_event):
 	"""Fired when a pygame.QUIT event is fired (window closed)"""
 
-class QuitRequest (circuits.Event):
+class quit_request (circuits.Event):
 	"""User requested quit (pressing escape, closing window...)"""
 
 class KeyHandler (circuits.BaseComponent):
 	"""
 Component that will handle key events.
 
-Contains decorators keydown_handler and keyup_handler, which can be used to
+Contains decorators key_down_handler and key_up_handler, which can be used to
 register a function as a handler for the specified key.
 Example:
 class SomeHandler (KeyHandler):
 	def __init__(self):
-		@self.keydown_handler(pygame.K_p)
+		@self.key_down_handler(pygame.K_p)
 		def p_pressed(self):
 			print ("The P key was pressed down.")
 """
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.keydown_handlers = {}
-		self.keyup_handlers = {}
+		self.key_down_handlers = {}
+		self.key_up_handlers = {}
 
-	def keydown_handler(self, key):
+	def key_down_handler(self, key):
 		def register(fun):
-			self.keydown_handlers[key] = fun
+			self.key_down_handlers[key] = fun
 			return fun
 		return register
 
-	def keyup_handler(self, key):
+	def key_up_handler(self, key):
 		def register(fun):
-			self.keyup_handlers[key] = fun
+			self.key_up_handlers[key] = fun
 			return fun
 		return register
 
 	@handler("key_down")
 	def _on_key_down(self, pygame_event):
-		if pygame_event.key in self.keydown_handlers:
-			self.keydown_handlers[pygame_event.key](self)
+		if pygame_event.key in self.key_down_handlers:
+			self.key_down_handlers[pygame_event.key](self)
 
 	@handler("key_up")
 	def _on_key_up(self, pygame_event):
-		if pygame_event.key in self.keyup_handlers:
-			self.keyup_handlers[pygame_event.key](self)
+		if pygame_event.key in self.key_up_handlers:
+			self.key_up_handlers[pygame_event.key](self)
 
 class PygamePoller (circuits.core.pollers.BasePoller):
 	"""Polls pygame for events and translates them into circuits events."""
 	def _generate_events(self, event):
 		for event in pygame.event.get():
 			if event.type == pygame.KEYDOWN:
-				self.fire(KeyDown(event))
+				self.fire(key_down(event))
 			elif event.type == pygame.KEYUP:
-				self.fire(KeyUp(event))
+				self.fire(key_up(event))
 			elif event.type == pygame.QUIT:
-				self.fire(Quit(event))
+				self.fire(quit(event))
 			elif event.type == pygame.MOUSEBUTTONDOWN:
-				self.fire(MouseDown(event))
+				self.fire(mouse_down(event))
 			elif event.type == pygame.MOUSEBUTTONUP:
-				self.fire(MouseUp(event))
+				self.fire(mouse_up(event))
 			elif event.type == pygame.MOUSEMOTION:
-				self.fire(MouseMove(event))
+				self.fire(mouse_move(event))
 			else:
-				self.fire(PygameEvent(event))
+				self.fire(pygame_event(event))

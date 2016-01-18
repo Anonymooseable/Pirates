@@ -23,7 +23,7 @@ from circuits.core.handlers import handler
 from .state import State
 import ship
 from classes import Vector2
-from .place_ship import ShipPlaced
+from .place_ship import ship_placed
 
 class AIPlacingShipsState (State):
 	"A ship-placement state that places ships randomly then immediately exits."
@@ -45,7 +45,7 @@ Creates an AIPlacingShipsState. Accepts lengths, a list of integer ship lengths 
 					new_ship.orientation = random.choice(list(ship.Ship.orientations.keys()))
 					new_ship.pos = Vector2(random.randrange(new_ship.grid.width), random.randrange(new_ship.grid.height))
 					generated = new_ship.position_ok()
-				yield self.call(ShipPlaced(new_ship))
+				yield self.call(ship_placed(new_ship))
 			self.unregister()
 
 	draw_channel = 99

@@ -59,7 +59,7 @@ number = later draw)
 	def draw(self, surface):
 		pass
 
-class Draw (circuits.Event):
+class draw (circuits.Event):
 	"""Event fired by the DrawManager to draw the components in its subtree."""
 
 class DrawManager (circuits.BaseComponent):
@@ -76,8 +76,8 @@ class DrawManager (circuits.BaseComponent):
 	@handler("draw", channel = "draw_manager")
 	def _on_draw(self, event, surface):
 		for channel in sorted(self.channels):
-			self.fire(Draw(surface), channel)
-		self.fire(Draw(surface), "flip")
+			self.fire(draw(surface), channel)
+		self.fire(draw(surface), "flip")
 		return
 
 	@handler("draw", channel = "flip")

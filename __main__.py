@@ -27,8 +27,8 @@ from grid import Grid
 #from states.place_all_ships import PlaceAllShipsState
 from states.ai_place import AIPlacingShipsState
 from states.target_ships import TargetingState
-from events import KeyHandler, Quit, PygamePoller, Update
-from draw import DrawManager, Draw
+from events import KeyHandler, quit, PygamePoller, update
+from draw import DrawManager, draw
 
 class PiratesGame (KeyHandler):
 	"""
@@ -42,11 +42,11 @@ Runs a battleships game.
 		self.grid = Grid(width = 7, height = 7).register(self)
 		self.state_queue = [AIPlacingShipsState(ship_lengths=[2, 3, 4, 4, 5]), TargetingState()]
 		self.next_state()
-		self.timer = circuits.Timer(1/self.FPS, Update(), persist = True).register(self)
+		self.timer = circuits.Timer(1/self.FPS, update(), persist = True).register(self)
 
-		@self.keydown_handler(pygame.K_ESCAPE)
+		@self.key_down_handler(pygame.K_ESCAPE)
 		def escape_pressed(self):
-			self.fire(Quit())
+			self.fire(quit())
 
 	@handler("started")
 	def _on_started(self, *args):
@@ -63,10 +63,10 @@ Runs a battleships game.
 
 	@handler("update")
 	def _on_update(self, *args):
-		self.fire(Draw(self.screen), "draw_manager")
+		self.fire(draw(self.screen), "draw_manager")
 
 	@handler("quit")
-	def _on_quit(self, event):
+	def _on_quit(self, *args):
 		self.stop()
 
 	@handler("prepare_unregister")

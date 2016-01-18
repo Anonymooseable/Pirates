@@ -26,7 +26,7 @@ from .cursor_state import CursorState, CursorModifier
 from .game_over import GameOverState
 from events import KeyHandler
 
-class SquareAttacked (circuits.Event):
+class square_attacked (circuits.Event):
 	"""Fired when a player fires at a position in the grid"""
 
 class TargetingState (CursorState):
@@ -70,4 +70,4 @@ when all the ships have been sunk.
 			self.unregister()
 
 	def complete(self, *args):
-		self.fire(SquareAttacked(self.cursor))
+		self.fire(square_attacked(self.cursor))
